@@ -96,6 +96,20 @@ Ensure the following runtimes are installed:
 
 ## 5. Quick Start & Setup Instructions
 
+### Option A: Running with Docker Compose (Recommended)
+You can boot the full stack (MySQL 8, Spring Boot Backend API, and Angular 19 Dashboard) with a single command:
+
+```bash
+docker-compose up --build
+```
+- **Frontend Dashboard:** `http://localhost:4200`
+- **Backend API:** `http://localhost:8080/api`
+- **Swagger Documentation:** `http://localhost:8080/swagger-ui/index.html`
+
+---
+
+### Option B: Running Locally (Manual Build)
+
 ### Step 1: Start the Spring Boot Backend (Port 8080)
 ```bash
 cd hotel-revenue-analytics-api
