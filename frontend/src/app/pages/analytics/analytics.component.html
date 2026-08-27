@@ -7,9 +7,14 @@
       <p class="page-subtitle">Deep-dive financial aggregations and property performance projections</p>
     </div>
 
-    <button (click)="loadAnalytics()" class="refresh-btn">
-      <span>↻ Refresh Analytics</span>
-    </button>
+    <div class="flex items-center gap-3">
+      <button (click)="exportCsv()" class="export-btn" title="Download reservation records as CSV">
+        <span>📥 Export CSV</span>
+      </button>
+      <button (click)="loadAnalytics()" class="refresh-btn">
+        <span>↻ Refresh Analytics</span>
+      </button>
+    </div>
   </div>
 
   <!-- ERROR NOTICE -->

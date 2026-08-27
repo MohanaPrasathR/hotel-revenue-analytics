@@ -218,4 +218,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const total = this.totalRevenue?.totalRevenue ?? 1;
     return total > 0 ? Math.round((revenue / total) * 100) : 0;
   }
+
+  exportCsv(): void {
+    this.analyticsService.exportBookingsCsv().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `hotel_revenue_export_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to export CSV: ' + err.message;
+      }
+    });
+  }
 }

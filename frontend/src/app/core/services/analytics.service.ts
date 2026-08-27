@@ -56,6 +56,14 @@ export class AnalyticsService {
     );
   }
 
+  exportBookingsCsv(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/export/csv`, {
+      responseType: 'blob'
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMsg = 'An unexpected analytics calculation error occurred.';
     if (error.status === 0) {

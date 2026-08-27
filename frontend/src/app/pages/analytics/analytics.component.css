@@ -27,6 +27,24 @@
   margin: 0.25rem 0 0 0;
 }
 
+.export-btn {
+  padding: 0.55rem 1.15rem;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  border-radius: 0.625rem;
+  font-size: 0.775rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn:hover {
+  background: rgba(16, 185, 129, 0.25);
+  transform: translateY(-1px);
+}
+
 .refresh-btn {
   padding: 0.55rem 1.15rem;
   background: rgba(168, 85, 247, 0.15);
