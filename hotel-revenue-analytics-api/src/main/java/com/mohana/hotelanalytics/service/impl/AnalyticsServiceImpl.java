@@ -107,4 +107,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         return topHotels;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] exportBookingsCsv() {
+        StringBuilder csv = new StringBuilder();
+        csv.append("ID,Hotel Name,Guest Name,Check-In Date,Check-Out Date,Guests,Room Type,Status,Total Revenue ($),Created At\n");
+        bookingRepository.findAll().forEach(b -> {
+            csv.append(b.getId()).append(",")
+               .append("\"").append(b.getHotelName().replace("\"", "\"\"")).append("\",")
+               .append("\"").append(b.getGuestName().replace("\"", "\"\"")).append("\",")
+               .append(b.getCheckInDate()).append(",")
+               .append(b.getCheckOutDate()).append(",")
+               .append(b.getGuests()).append(",")
+               .append(b.getRoomType()).append(",")
+               .append(b.getBookingStatus()).append(",")
+               .append(b.getTotalRevenue()).append(",")
+               .append(b.getCreatedAt()).append("\n");
+        });
+        return csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    }
 }
