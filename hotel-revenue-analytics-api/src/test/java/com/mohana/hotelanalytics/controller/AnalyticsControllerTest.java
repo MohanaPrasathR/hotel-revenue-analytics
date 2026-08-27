@@ -124,4 +124,16 @@ class AnalyticsControllerTest {
                 .andExpect(jsonPath("$[0].rank").value(1))
                 .andExpect(jsonPath("$[0].hotelName").value("Four Seasons"));
     }
+
+    @Test
+    @DisplayName("GET /api/analytics/export/csv should return CSV file with 200 OK")
+    void exportBookingsCsv_ShouldReturn200() throws Exception {
+        byte[] csvData = "ID,Hotel Name\n1,Grand Horizon\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        when(analyticsService.exportBookingsCsv()).thenReturn(csvData);
+
+        mockMvc.perform(get("/api/analytics/export/csv"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", "attachment; filename=hotel_bookings_export.csv"))
+                .andExpect(content().contentType("text/csv; charset=UTF-8"));
+    }
 }

@@ -110,4 +110,30 @@ class AnalyticsServiceTest {
         assertThat(response.get(0).getRank()).isEqualTo(1);
         assertThat(response.get(0).getHotelName()).isEqualTo("Ritz Carlton");
     }
+
+    @Test
+    @DisplayName("Should export bookings into valid CSV byte array")
+    void exportBookingsCsv_Success() {
+        Booking sampleBooking = Booking.builder()
+                .id(1L)
+                .hotelName("Grand Horizon Resort")
+                .guestName("Alice Walker")
+                .checkInDate(java.time.LocalDate.of(2026, 9, 1))
+                .checkOutDate(java.time.LocalDate.of(2026, 9, 5))
+                .guests(2)
+                .roomType(com.mohana.hotelanalytics.entity.RoomType.DELUXE)
+                .bookingStatus(com.mohana.hotelanalytics.entity.BookingStatus.CONFIRMED)
+                .totalRevenue(new BigDecimal("1200.00"))
+                .createdAt(java.time.LocalDateTime.now())
+                .build();
+
+        when(bookingRepository.findAll()).thenReturn(Collections.singletonList(sampleBooking));
+
+        byte[] csvBytes = analyticsService.exportBookingsCsv();
+        String csvContent = new String(csvBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+        assertThat(csvContent).contains("ID,Hotel Name,Guest Name");
+        assertThat(csvContent).contains("Grand Horizon Resort");
+        assertThat(csvContent).contains("Alice Walker");
+    }
 }
