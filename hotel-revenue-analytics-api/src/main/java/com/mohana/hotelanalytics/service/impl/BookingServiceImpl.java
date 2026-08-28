@@ -9,6 +9,7 @@ import com.mohana.hotelanalytics.exception.ResourceNotFoundException;
 import com.mohana.hotelanalytics.repository.BookingRepository;
 import com.mohana.hotelanalytics.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "revenueAnalytics", allEntries = true)
     public BookingResponse createBooking(BookingCreateRequest request) {
         validateDates(request.getCheckInDate(), request.getCheckOutDate());
 
@@ -60,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "revenueAnalytics", allEntries = true)
     public BookingResponse updateBooking(Long id, BookingUpdateRequest request) {
         Booking existingBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
@@ -81,6 +84,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "revenueAnalytics", allEntries = true)
     public void deleteBooking(Long id) {
         if (!bookingRepository.existsById(id)) {
             throw new ResourceNotFoundException("Booking not found with ID: " + id);

@@ -5,6 +5,7 @@ import com.mohana.hotelanalytics.entity.BookingStatus;
 import com.mohana.hotelanalytics.repository.BookingRepository;
 import com.mohana.hotelanalytics.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "revenueAnalytics", key = "'totalRevenue'")
     public TotalRevenueResponse getTotalRevenue() {
         BigDecimal totalRevenue = bookingRepository.findTotalRevenueOfActiveBookings();
         Long count = bookingRepository.countActiveBookings();
