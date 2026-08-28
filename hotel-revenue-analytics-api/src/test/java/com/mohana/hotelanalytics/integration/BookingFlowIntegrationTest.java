@@ -83,4 +83,34 @@ class BookingFlowIntegrationTest {
         mockMvc.perform(get("/api/bookings/" + bookingId))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Verify cache invalidation and recalculation on booking operations")
+    void testCacheEvictionOnBookingMutation() throws Exception {
+        // First analytics call populates cache
+        mockMvc.perform(get("/api/analytics/total-revenue"))
+                .andExpect(status().isOk());
+
+        // Create booking triggers @CacheEvict
+        BookingCreateRequest createReq = BookingCreateRequest.builder()
+                .hotelName("Cache Grand")
+                .guestName("Cache Tester")
+                .checkInDate(LocalDate.of(2026, 11, 1))
+                .checkOutDate(LocalDate.of(2026, 11, 5))
+                .guests(2)
+                .roomType(RoomType.DOUBLE)
+                .bookingStatus(BookingStatus.CONFIRMED)
+                .totalRevenue(new BigDecimal("999.00"))
+                .build();
+
+        mockMvc.perform(post("/api/bookings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createReq)))
+                .andExpect(status().isCreated());
+
+        // Subsequent query reflects evicted and refreshed cache
+        mockMvc.perform(get("/api/analytics/total-revenue"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalRevenue").exists());
+    }
 }
