@@ -376,6 +376,17 @@ export class BookingsComponent implements OnInit, OnDestroy {
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   }
 
+  estimateRevenue(roomType: RoomType, nights: number): number {
+    const baseRates: Record<RoomType, number> = {
+      SINGLE: 120,
+      DOUBLE: 200,
+      SUITE: 350,
+      DELUXE: 500,
+      PRESIDENTIAL: 1200
+    };
+    return (baseRates[roomType] || 150) * Math.max(1, nights);
+  }
+
   formatCurrency(amount: number): string {
     return '$' + Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
