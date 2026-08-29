@@ -16,7 +16,8 @@ import { CommonModule } from '@angular/common';
       </div>
       <div class="card-value">{{ value }}</div>
       <div class="card-footer">
-        <span *ngIf="badge" class="footer-badge">{{ badge }}</span>
+        <span *ngIf="trend" class="footer-badge trend-badge">{{ trend }}</span>
+        <span *ngIf="badge && !trend" class="footer-badge">{{ badge }}</span>
         <span class="footer-subtext">{{ subtext }}</span>
       </div>
     </div>
@@ -134,5 +135,6 @@ export class KpiCardComponent {
   @Input() icon: string = '📊';
   @Input() subtext: string = '';
   @Input() badge: string = '';
+  @Input() trend: string = '';
   @Input() colorTheme: 'emerald' | 'blue' | 'purple' | 'amber' | 'rose' = 'emerald';
 }
