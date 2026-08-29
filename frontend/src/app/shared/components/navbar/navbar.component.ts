@@ -48,6 +48,11 @@ import { RouterModule } from '@angular/router';
             <span class="status-label">{{ backendOnline ? 'API Connected' : 'API Offline' }}</span>
           </div>
 
+          <!-- Theme Toggle -->
+          <button (click)="toggleTheme()" class="action-btn icon-only" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+            <span>{{ isDarkMode ? '🌙' : '☀️' }}</span>
+          </button>
+
           <!-- Refresh Data Trigger -->
           <button (click)="refreshRequested.emit()" class="action-btn icon-only" title="Refresh Live Data">
             <span>↻</span>
@@ -241,4 +246,19 @@ import { RouterModule } from '@angular/router';
 export class NavbarComponent {
   @Input() backendOnline: boolean = true;
   @Output() refreshRequested = new EventEmitter<void>();
+
+  isDarkMode: boolean = true;
+
+  constructor() {
+    const saved = localStorage.getItem('app-theme');
+    if (saved) {
+      this.isDarkMode = saved === 'dark';
+    }
+  }
+
+  toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    localStorage.setItem('app-theme', this.isDarkMode ? 'dark' : 'light');
+    document.documentElement.classList.toggle('light-theme', !this.isDarkMode);
+  }
 }
