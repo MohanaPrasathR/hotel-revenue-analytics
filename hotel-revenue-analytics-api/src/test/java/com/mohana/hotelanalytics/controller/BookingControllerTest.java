@@ -125,4 +125,17 @@ class BookingControllerTest {
         mockMvc.perform(delete("/api/bookings/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    @DisplayName("POST /api/bookings with negative revenue should return 400 Validation Error")
+    void createBooking_NegativeRevenue_ShouldReturn400() throws Exception {
+        createRequest.setTotalRevenue(new BigDecimal("-500.00"));
+
+        mockMvc.perform(post("/api/bookings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Validation Failed"));
+    }
 }
