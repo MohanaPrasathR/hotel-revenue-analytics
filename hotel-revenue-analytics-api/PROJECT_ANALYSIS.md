@@ -300,13 +300,18 @@ $$\text{Average Revenue} = \frac{\sum \text{totalRevenue}}{\text{count of active
   ```
 - Computed with `BigDecimal` rounding to 2 decimal places using `RoundingMode.HALF_UP`.
 
-### 6. Top N Hotels by Revenue
-- **JPQL:**
-  ```sql
-  SELECT b.hotelName, SUM(b.totalRevenue), COUNT(b)
-  FROM Booking b
-  WHERE b.bookingStatus <> com.mohana.hotelanalytics.entity.BookingStatus.CANCELLED
-  GROUP BY b.hotelName
-  ORDER BY SUM(b.totalRevenue) DESC
-  ```
 - Paginated using Spring Data `PageRequest.of(0, limit)` to return the top $N$ properties.
+
+---
+
+## 7. Caching, Metrics & Containerization Architecture
+
+### A. In-Memory Spring Cache Invalidation
+- **Cache Name:** `revenueAnalytics`
+- **Read Cache:** Read-heavy aggregation endpoints (`/total-revenue`) are cached using `@Cacheable` to eliminate repeat full-table scans.
+- **Cache Eviction:** All mutation endpoints (`createBooking`, `updateBooking`, `deleteBooking`) trigger `@CacheEvict(allEntries = true)` to guarantee transactional accuracy.
+
+### B. Containerization & Observability
+- **Docker Compose:** Multi-container orchestration powering MySQL 8, Spring Boot 3 API, and Angular 19 SPA.
+- **Actuator Health Checks:** Live endpoint `/actuator/health` provides continuous liveness and readiness probes.
+- **MDC Correlation Logging:** `RequestLoggingFilter` stamps each incoming request with a unique `X-Correlation-ID` header and logs execution latencies.
