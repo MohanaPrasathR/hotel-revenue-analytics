@@ -216,6 +216,8 @@ The application features a complete automated test suite:
 | `GET` | `/api/analytics/booking-count-by-status` | Operational booking status counts | `200 OK` |
 | `GET` | `/api/analytics/average-revenue` | Mean revenue yield per active booking | `200 OK` |
 | `GET` | `/api/analytics/top-hotels?limit=5` | Ranked top $N$ hotel properties | `200 OK` |
+| `GET` | `/api/analytics/export/csv` | Download complete booking records as CSV | `200 OK` |
+| `GET` | `/actuator/health` | Spring Boot health and readiness probe | `200 OK` |
 
 ---
 
@@ -223,22 +225,23 @@ The application features a complete automated test suite:
 
 ### ✅ Completed & Fully Verified Features
 - [x] Full-Stack decoupled microservice architecture (Angular 19 + Spring Boot 3 + Java 22)
-- [x] Executive Dashboard with 5 core KPI summary cards
+- [x] Executive Dashboard with 5 core KPI summary cards with trend percentage indicators
 - [x] Interactive Chart.js Monthly Revenue Yield Trend and Status Donut charts
 - [x] Full CRUD Reservations Manager with real-time search, multi-filters, and date filtering
 - [x] Add/Edit Modal Form with stay night duration preview and strict validation
 - [x] Delete confirmation modal dialog with zero accidental data loss
 - [x] Floating Toast notification system for instant user feedback
 - [x] Safe development-only Sample Data Loader with 23 realistic fictional records
-- [x] Idempotency guard (`count == 0`) preventing duplicate inserts on restart
-- [x] Global CORS configuration with credentials and reverse proxy support
-- [x] 29 passing JUnit 5 / Spring Boot automated tests
+- [x] In-memory Spring Cache abstraction with automatic cache invalidation on booking mutations
+- [x] One-click CSV financial reporting export engine in UI and REST API
+- [x] Multi-stage Dockerfiles and Docker Compose orchestration
+- [x] GitHub Actions CI automated build and test pipelines
+- [x] 30+ passing JUnit 5 / Jasmine automated tests
 - [x] OpenAPI 3.0 / Swagger UI documentation integration
 
 ### ⏳ Remaining Limitations & Roadmap Enhancements
 - [ ] **Role-Based Access Control (RBAC):** Authentication & authorization via Spring Security with OAuth2 / JWT tokens for Manager vs Receptionist roles.
 - [ ] **Dynamic Room Inventory Allocation:** Tracking physical room numbers with automated overbooking locks.
-- [ ] **Export Engine:** One-click CSV and PDF report generation for executive accounting audits.
 - [ ] **PMS Integration Webhooks:** Real-time bi-directional synchronization with external systems (e.g. Opera, Cloudbeds, Amadeus).
 
 ---
