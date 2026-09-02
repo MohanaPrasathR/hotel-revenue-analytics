@@ -1,6 +1,7 @@
 package com.mohana.hotelanalytics.service;
 
 import com.mohana.hotelanalytics.dto.response.*;
+import com.mohana.hotelanalytics.entity.Booking;
 import com.mohana.hotelanalytics.entity.BookingStatus;
 import com.mohana.hotelanalytics.repository.BookingRepository;
 import com.mohana.hotelanalytics.service.impl.AnalyticsServiceImpl;
