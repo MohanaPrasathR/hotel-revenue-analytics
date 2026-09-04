@@ -54,6 +54,20 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<BookingResponse> getBookingsWithFilters(
+            String hotel,
+            com.mohana.hotelanalytics.entity.RoomType roomType,
+            com.mohana.hotelanalytics.entity.BookingStatus status,
+            LocalDate checkInFrom,
+            LocalDate checkInTo) {
+        String sanitizedHotel = (hotel != null && !hotel.trim().isEmpty()) ? hotel.trim() : null;
+        return bookingRepository.findFilteredBookings(sanitizedHotel, roomType, status, checkInFrom, checkInTo).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public BookingResponse getBookingById(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));

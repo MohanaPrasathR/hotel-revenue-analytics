@@ -138,4 +138,16 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Validation Failed"));
     }
+
+    @Test
+    @DisplayName("GET /api/bookings with query parameters should return filtered list")
+    void getBookings_WithFilters_ShouldReturn200() throws Exception {
+        when(bookingService.getBookingsWithFilters(eq("Grand"), eq(RoomType.DELUXE), eq(BookingStatus.CONFIRMED), any(), any()))
+                .thenReturn(List.of(sampleResponse));
+
+        mockMvc.perform(get("/api/bookings?hotel=Grand&roomType=DELUXE&status=CONFIRMED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].hotelName").value("Grand Hyatt"))
+                .andExpect(jsonPath("$[0].roomType").value("DELUXE"));
+    }
 }

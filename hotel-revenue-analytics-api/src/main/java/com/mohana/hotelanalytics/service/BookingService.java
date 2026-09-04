@@ -12,6 +12,13 @@ public interface BookingService {
 
     List<BookingResponse> getAllBookings();
 
+    List<BookingResponse> getBookingsWithFilters(
+            String hotel,
+            com.mohana.hotelanalytics.entity.RoomType roomType,
+            com.mohana.hotelanalytics.entity.BookingStatus status,
+            java.time.LocalDate checkInFrom,
+            java.time.LocalDate checkInTo);
+
     BookingResponse getBookingById(Long id);
 
     BookingResponse updateBooking(Long id, BookingUpdateRequest request);

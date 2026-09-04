@@ -5,9 +5,11 @@ import com.mohana.hotelanalytics.entity.BookingStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -16,6 +18,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByHotelNameIgnoreCase(String hotelName);
 
     List<Booking> findByBookingStatus(BookingStatus bookingStatus);
+
+    /**
+     * Filtered search across multiple optional criteria.
+     */
+    @Query("SELECT b FROM Booking b WHERE " +
+           "(:hotelName IS NULL OR LOWER(b.hotelName) LIKE LOWER(CONCAT('%', :hotelName, '%'))) AND " +
+           "(:roomType IS NULL OR b.roomType = :roomType) AND " +
+           "(:bookingStatus IS NULL OR b.bookingStatus = :bookingStatus) AND " +
+           "(CAST(:checkInFrom AS date) IS NULL OR b.checkInDate >= :checkInFrom) AND " +
+           "(CAST(:checkInTo AS date) IS NULL OR b.checkInDate <= :checkInTo) " +
+           "ORDER BY b.checkInDate DESC")
+    List<Booking> findFilteredBookings(
+            @Param("hotelName") String hotelName,
+            @Param("roomType") com.mohana.hotelanalytics.entity.RoomType roomType,
+            @Param("bookingStatus") BookingStatus bookingStatus,
+            @Param("checkInFrom") LocalDate checkInFrom,
+            @Param("checkInTo") LocalDate checkInTo);
 
     /**
      * Query 1: Calculates total revenue across non-cancelled bookings.

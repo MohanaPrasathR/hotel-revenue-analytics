@@ -151,4 +151,17 @@ class BookingServiceTest {
         verify(bookingRepository, times(1)).existsById(1L);
         verify(bookingRepository, times(1)).deleteById(1L);
     }
+
+    @Test
+    @DisplayName("Should return filtered bookings matching criteria")
+    void getBookingsWithFilters_Success() {
+        when(bookingRepository.findFilteredBookings("Grand", RoomType.DELUXE, BookingStatus.CONFIRMED, null, null))
+                .thenReturn(List.of(sampleBooking));
+
+        List<BookingResponse> responses = bookingService.getBookingsWithFilters("Grand", RoomType.DELUXE, BookingStatus.CONFIRMED, null, null);
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getHotelName()).isEqualTo("Grand Hyatt");
+        verify(bookingRepository, times(1)).findFilteredBookings("Grand", RoomType.DELUXE, BookingStatus.CONFIRMED, null, null);
+    }
 }

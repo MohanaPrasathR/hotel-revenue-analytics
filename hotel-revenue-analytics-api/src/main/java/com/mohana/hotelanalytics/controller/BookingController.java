@@ -26,7 +26,16 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookingResponse>> getAllBookings() {
+    public ResponseEntity<List<BookingResponse>> getAllBookings(
+            @RequestParam(required = false) String hotel,
+            @RequestParam(required = false) com.mohana.hotelanalytics.entity.RoomType roomType,
+            @RequestParam(required = false) com.mohana.hotelanalytics.entity.BookingStatus status,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate checkInFrom,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate checkInTo) {
+        if (hotel != null || roomType != null || status != null || checkInFrom != null || checkInTo != null) {
+            List<BookingResponse> bookings = bookingService.getBookingsWithFilters(hotel, roomType, status, checkInFrom, checkInTo);
+            return ResponseEntity.ok(bookings);
+        }
         List<BookingResponse> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(bookings);
     }
