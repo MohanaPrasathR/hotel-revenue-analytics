@@ -10,7 +10,8 @@ import {
   MonthlyRevenueResponse,
   StatusCountResponse,
   AverageRevenueResponse,
-  TopHotelResponse
+  TopHotelResponse,
+  RoomTypeRevenueResponse
 } from '../../core/models/analytics.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorBannerComponent } from '../../shared/components/error-banner/error-banner.component';
@@ -35,9 +36,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   @ViewChild('hotelBarChartCanvas') hotelBarChartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('monthlyBarChartCanvas') monthlyBarChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('roomTypeDoughnutCanvas') roomTypeDoughnutCanvas!: ElementRef<HTMLCanvasElement>;
 
   private hotelBarChart: Chart | null = null;
   private monthlyBarChart: Chart | null = null;
+  private roomTypeChart: Chart | null = null;
 
   isLoading = true;
   errorMessage = '';
@@ -50,6 +53,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   monthlyTrends: MonthlyRevenueResponse[] = [];
   statusCounts: StatusCountResponse[] = [];
   topHotels: TopHotelResponse[] = [];
+  roomTypeRevenues: RoomTypeRevenueResponse[] = [];
 
   ngOnInit(): void {
     this.loadAnalytics();
@@ -59,6 +63,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
     if (this.hotelBarChart) this.hotelBarChart.destroy();
     if (this.monthlyBarChart) this.monthlyBarChart.destroy();
+    if (this.roomTypeChart) this.roomTypeChart.destroy();
   }
 
   loadAnalytics(): void {
@@ -71,7 +76,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       hotels: this.analyticsService.getRevenueByHotel(),
       months: this.analyticsService.getRevenueByMonth(),
       statuses: this.analyticsService.getBookingCountByStatus(),
-      top: this.analyticsService.getTopHotels(this.topLimit)
+      top: this.analyticsService.getTopHotels(this.topLimit),
+      roomTypes: this.analyticsService.getRevenueByRoomType()
     });
 
     this.sub.add(
@@ -83,11 +89,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.monthlyTrends = data.months;
           this.statusCounts = data.statuses;
           this.topHotels = data.top;
+          this.roomTypeRevenues = data.roomTypes;
           this.isLoading = false;
 
           setTimeout(() => {
             this.renderHotelBarChart();
             this.renderMonthlyBarChart();
+            this.renderRoomTypeChart();
           }, 50);
         },
         error: (err) => {
@@ -96,6 +104,61 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  renderRoomTypeChart(): void {
+    if (!this.roomTypeDoughnutCanvas) return;
+    if (this.roomTypeChart) this.roomTypeChart.destroy();
+
+    const ctx = this.roomTypeDoughnutCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const labels = this.roomTypeRevenues.map(r => r.roomType);
+    const data = this.roomTypeRevenues.map(r => r.totalRevenue);
+    const colors = [
+      '#6366f1', // Indigo
+      '#a855f7', // Purple
+      '#ec4899', // Pink
+      '#06b6d4', // Cyan
+      '#f59e0b'  // Amber
+    ];
+
+    this.roomTypeChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors.slice(0, labels.length),
+          borderColor: '#0f172a',
+          borderWidth: 2,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#94a3b8',
+              font: { family: 'Plus Jakarta Sans, sans-serif', size: 11 },
+              padding: 12
+            }
+          },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            callbacks: {
+              label: (ctx) => ` ${ctx.label}: $${Number(ctx.parsed).toLocaleString()}`
+            }
+          }
+        },
+        cutout: '65%'
+      }
+    });
   }
 
   onLimitChange(): void {

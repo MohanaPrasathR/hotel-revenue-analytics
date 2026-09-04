@@ -34,6 +34,14 @@ export interface TopHotelResponse {
   totalBookings: number;
 }
 
+export interface RoomTypeRevenueResponse {
+  roomType: string;
+  totalRevenue: number;
+  bookingCount: number;
+  averageRevenue: number;
+  revenuePercentage: number;
+}
+
 export interface DashboardSummary {
   totalRevenue: number;
   totalBookings: number;

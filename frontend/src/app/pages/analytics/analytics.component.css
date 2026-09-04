@@ -114,6 +114,12 @@
   width: 100%;
 }
 
+.room-chart-container {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
 .limit-selector {
   display: flex;
   align-items: center;

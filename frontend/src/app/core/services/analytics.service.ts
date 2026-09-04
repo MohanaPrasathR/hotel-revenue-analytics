@@ -56,6 +56,12 @@ export class AnalyticsService {
     );
   }
 
+  getRevenueByRoomType(): Observable<RoomTypeRevenueResponse[]> {
+    return this.http.get<RoomTypeRevenueResponse[]>(`${this.apiUrl}/revenue-by-room-type`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   exportBookingsCsv(): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/export/csv`, {
       responseType: 'blob'

@@ -40,4 +40,19 @@ describe('AnalyticsService', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
+
+  it('should fetch room type revenue distribution', () => {
+    const mockRoomTypes = [
+      { roomType: 'DELUXE', totalRevenue: 12000.0, bookingCount: 8, averageRevenue: 1500.0, revenuePercentage: 40.0 }
+    ];
+
+    service.getRevenueByRoomType().subscribe((res) => {
+      expect(res.length).toBe(1);
+      expect(res[0].roomType).toBe('DELUXE');
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/analytics/revenue-by-room-type`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockRoomTypes);
+  });
 });
