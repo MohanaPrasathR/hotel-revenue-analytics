@@ -99,6 +99,24 @@ class AnalyticsServiceTest {
     }
 
     @Test
+    @DisplayName("Should return revenue breakdown grouped by room type")
+    void getRevenueByRoomType_Success() {
+        Object[] suiteRow = new Object[]{com.mohana.hotelanalytics.entity.RoomType.SUITE, new BigDecimal("4000.00"), 4L};
+        List<Object[]> rows = Collections.singletonList(suiteRow);
+        when(bookingRepository.findRevenueGroupedByRoomType()).thenReturn(rows);
+        when(bookingRepository.findTotalRevenueOfActiveBookings()).thenReturn(new BigDecimal("8000.00"));
+
+        List<RoomTypeRevenueResponse> response = analyticsService.getRevenueByRoomType();
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getRoomType()).isEqualTo(com.mohana.hotelanalytics.entity.RoomType.SUITE);
+        assertThat(response.get(0).getTotalRevenue()).isEqualTo(new BigDecimal("4000.00"));
+        assertThat(response.get(0).getBookingCount()).isEqualTo(4L);
+        assertThat(response.get(0).getAverageRevenue()).isEqualTo(new BigDecimal("1000.00"));
+        assertThat(response.get(0).getRevenuePercentage()).isEqualTo(50.0);
+    }
+
+    @Test
     @DisplayName("Should return top hotels by revenue limit")
     void getTopHotels_Success() {
         Object[] topHotelRow = new Object[]{"Ritz Carlton", new BigDecimal("4500.00"), 6L};

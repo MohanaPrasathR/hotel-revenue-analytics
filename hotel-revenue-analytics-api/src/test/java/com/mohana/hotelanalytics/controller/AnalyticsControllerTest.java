@@ -93,6 +93,26 @@ class AnalyticsControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/analytics/revenue-by-room-type should return 200 OK")
+    void getRevenueByRoomType_ShouldReturn200() throws Exception {
+        RoomTypeRevenueResponse roomTypeResponse = RoomTypeRevenueResponse.builder()
+                .roomType(com.mohana.hotelanalytics.entity.RoomType.DELUXE)
+                .totalRevenue(new BigDecimal("7500.00"))
+                .bookingCount(6L)
+                .averageRevenue(new BigDecimal("1250.00"))
+                .revenuePercentage(35.5)
+                .build();
+
+        when(analyticsService.getRevenueByRoomType()).thenReturn(List.of(roomTypeResponse));
+
+        mockMvc.perform(get("/api/analytics/revenue-by-room-type"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].roomType").value("DELUXE"))
+                .andExpect(jsonPath("$[0].totalRevenue").value(7500.00))
+                .andExpect(jsonPath("$[0].revenuePercentage").value(35.5));
+    }
+
+    @Test
     @DisplayName("GET /api/analytics/average-revenue should return 200 OK")
     void getAverageRevenue_ShouldReturn200() throws Exception {
         AverageRevenueResponse avgResponse = AverageRevenueResponse.builder()

@@ -18,5 +18,7 @@ public interface AnalyticsService {
 
     List<TopHotelResponse> getTopHotels(int limit);
 
+    List<RoomTypeRevenueResponse> getRevenueByRoomType();
+
     byte[] exportBookingsCsv();
 }

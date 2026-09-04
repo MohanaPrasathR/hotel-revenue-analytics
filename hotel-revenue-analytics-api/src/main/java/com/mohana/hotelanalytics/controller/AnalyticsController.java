@@ -39,6 +39,12 @@ public class AnalyticsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/revenue-by-room-type")
+    public ResponseEntity<List<RoomTypeRevenueResponse>> getRevenueByRoomType() {
+        List<RoomTypeRevenueResponse> response = analyticsService.getRevenueByRoomType();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/average-revenue")
     public ResponseEntity<AverageRevenueResponse> getAverageRevenue() {
         AverageRevenueResponse response = analyticsService.getAverageRevenue();

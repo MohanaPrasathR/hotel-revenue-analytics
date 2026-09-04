@@ -72,4 +72,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
            "GROUP BY b.hotelName " +
            "ORDER BY SUM(b.totalRevenue) DESC")
     List<Object[]> findTopHotelsByRevenue(Pageable pageable);
+
+    /**
+     * Query 7: Groups cumulative revenue and booking count by RoomType enum value.
+     */
+    @Query("SELECT b.roomType, SUM(b.totalRevenue), COUNT(b) " +
+           "FROM Booking b " +
+           "WHERE b.bookingStatus <> com.mohana.hotelanalytics.entity.BookingStatus.CANCELLED " +
+           "GROUP BY b.roomType " +
+           "ORDER BY SUM(b.totalRevenue) DESC")
+    List<Object[]> findRevenueGroupedByRoomType();
 }

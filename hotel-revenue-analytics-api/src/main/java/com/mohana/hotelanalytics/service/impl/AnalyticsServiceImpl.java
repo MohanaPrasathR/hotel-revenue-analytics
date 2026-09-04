@@ -112,6 +112,38 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<RoomTypeRevenueResponse> getRevenueByRoomType() {
+        List<Object[]> results = bookingRepository.findRevenueGroupedByRoomType();
+        BigDecimal grandTotal = bookingRepository.findTotalRevenueOfActiveBookings();
+        double totalRevDouble = grandTotal != null ? grandTotal.doubleValue() : 0.0;
+
+        List<RoomTypeRevenueResponse> responses = new ArrayList<>();
+        for (Object[] row : results) {
+            com.mohana.hotelanalytics.entity.RoomType roomType = (com.mohana.hotelanalytics.entity.RoomType) row[0];
+            BigDecimal totalRev = (BigDecimal) row[1];
+            Long count = (Long) row[2];
+
+            BigDecimal avgRev = (count != null && count > 0 && totalRev != null)
+                    ? totalRev.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+
+            double pct = (totalRevDouble > 0 && totalRev != null)
+                    ? Math.round((totalRev.doubleValue() / totalRevDouble) * 1000.0) / 10.0
+                    : 0.0;
+
+            responses.add(RoomTypeRevenueResponse.builder()
+                    .roomType(roomType)
+                    .totalRevenue(totalRev)
+                    .bookingCount(count)
+                    .averageRevenue(avgRev)
+                    .revenuePercentage(pct)
+                    .build());
+        }
+        return responses;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public byte[] exportBookingsCsv() {
         StringBuilder csv = new StringBuilder();
         csv.append("ID,Hotel Name,Guest Name,Check-In Date,Check-Out Date,Guests,Room Type,Status,Total Revenue ($),Created At\n");
