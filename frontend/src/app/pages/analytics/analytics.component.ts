@@ -54,6 +54,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   statusCounts: StatusCountResponse[] = [];
   topHotels: TopHotelResponse[] = [];
   roomTypeRevenues: RoomTypeRevenueResponse[] = [];
+  operationalMetrics: OperationalMetricsResponse | null = null;
 
   ngOnInit(): void {
     this.loadAnalytics();
@@ -77,7 +78,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       months: this.analyticsService.getRevenueByMonth(),
       statuses: this.analyticsService.getBookingCountByStatus(),
       top: this.analyticsService.getTopHotels(this.topLimit),
-      roomTypes: this.analyticsService.getRevenueByRoomType()
+      roomTypes: this.analyticsService.getRevenueByRoomType(),
+      operational: this.analyticsService.getOperationalMetrics()
     });
 
     this.sub.add(
@@ -90,6 +92,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.statusCounts = data.statuses;
           this.topHotels = data.top;
           this.roomTypeRevenues = data.roomTypes;
+          this.operationalMetrics = data.operational;
           this.isLoading = false;
 
           setTimeout(() => {

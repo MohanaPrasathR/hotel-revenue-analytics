@@ -62,6 +62,12 @@ export class AnalyticsService {
     );
   }
 
+  getOperationalMetrics(): Observable<OperationalMetricsResponse> {
+    return this.http.get<OperationalMetricsResponse>(`${this.apiUrl}/operational-metrics`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   exportBookingsCsv(): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/export/csv`, {
       responseType: 'blob'

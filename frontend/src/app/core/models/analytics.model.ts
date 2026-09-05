@@ -42,6 +42,16 @@ export interface RoomTypeRevenueResponse {
   revenuePercentage: number;
 }
 
+export interface OperationalMetricsResponse {
+  averageDailyRate: number;
+  averageLengthOfStay: number;
+  totalRoomNights: number;
+  cancellationRate: number;
+  totalBookings: number;
+  activeBookings: number;
+  cancelledBookings: number;
+}
+
 export interface DashboardSummary {
   totalRevenue: number;
   totalBookings: number;

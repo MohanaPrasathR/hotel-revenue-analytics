@@ -55,4 +55,26 @@ describe('AnalyticsService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockRoomTypes);
   });
+
+  it('should fetch hospitality operational metrics', () => {
+    const mockOpMetrics = {
+      averageDailyRate: 195.5,
+      averageLengthOfStay: 3.5,
+      totalRoomNights: 140,
+      cancellationRate: 5.2,
+      totalBookings: 42,
+      activeBookings: 40,
+      cancelledBookings: 2
+    };
+
+    service.getOperationalMetrics().subscribe((res) => {
+      expect(res.averageDailyRate).toBe(195.5);
+      expect(res.averageLengthOfStay).toBe(3.5);
+      expect(res.cancellationRate).toBe(5.2);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/analytics/operational-metrics`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockOpMetrics);
+  });
 });
