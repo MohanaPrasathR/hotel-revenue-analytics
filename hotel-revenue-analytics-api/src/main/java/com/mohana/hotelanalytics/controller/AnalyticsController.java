@@ -45,6 +45,12 @@ public class AnalyticsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/operational-metrics")
+    public ResponseEntity<OperationalMetricsResponse> getOperationalMetrics() {
+        OperationalMetricsResponse response = analyticsService.getOperationalMetrics();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/average-revenue")
     public ResponseEntity<AverageRevenueResponse> getAverageRevenue() {
         AverageRevenueResponse response = analyticsService.getAverageRevenue();

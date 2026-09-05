@@ -20,5 +20,7 @@ public interface AnalyticsService {
 
     List<RoomTypeRevenueResponse> getRevenueByRoomType();
 
+    OperationalMetricsResponse getOperationalMetrics();
+
     byte[] exportBookingsCsv();
 }

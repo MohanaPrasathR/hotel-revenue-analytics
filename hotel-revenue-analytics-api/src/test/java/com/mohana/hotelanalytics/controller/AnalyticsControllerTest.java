@@ -113,6 +113,28 @@ class AnalyticsControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/analytics/operational-metrics should return 200 OK")
+    void getOperationalMetrics_ShouldReturn200() throws Exception {
+        OperationalMetricsResponse opResponse = OperationalMetricsResponse.builder()
+                .averageDailyRate(new BigDecimal("210.00"))
+                .averageLengthOfStay(3.2)
+                .totalRoomNights(120L)
+                .cancellationRate(10.5)
+                .totalBookings(20L)
+                .activeBookings(18L)
+                .cancelledBookings(2L)
+                .build();
+
+        when(analyticsService.getOperationalMetrics()).thenReturn(opResponse);
+
+        mockMvc.perform(get("/api/analytics/operational-metrics"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.averageDailyRate").value(210.00))
+                .andExpect(jsonPath("$.averageLengthOfStay").value(3.2))
+                .andExpect(jsonPath("$.cancellationRate").value(10.5));
+    }
+
+    @Test
     @DisplayName("GET /api/analytics/average-revenue should return 200 OK")
     void getAverageRevenue_ShouldReturn200() throws Exception {
         AverageRevenueResponse avgResponse = AverageRevenueResponse.builder()

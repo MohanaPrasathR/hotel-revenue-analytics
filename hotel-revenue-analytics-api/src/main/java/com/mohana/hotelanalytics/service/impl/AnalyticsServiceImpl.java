@@ -144,6 +144,52 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     @Transactional(readOnly = true)
+    public OperationalMetricsResponse getOperationalMetrics() {
+        List<com.mohana.hotelanalytics.entity.Booking> allBookings = bookingRepository.findAll();
+        long totalBookings = allBookings.size();
+        
+        List<com.mohana.hotelanalytics.entity.Booking> activeBookingsList = allBookings.stream()
+                .filter(b -> b.getBookingStatus() != BookingStatus.CANCELLED)
+                .collect(Collectors.toList());
+
+        long activeCount = activeBookingsList.size();
+        long cancelledCount = totalBookings - activeCount;
+
+        long totalNights = activeBookingsList.stream()
+                .mapToLong(b -> java.time.temporal.ChronoUnit.DAYS.between(b.getCheckInDate(), b.getCheckOutDate()))
+                .filter(nights -> nights > 0)
+                .sum();
+
+        BigDecimal totalRevenue = activeBookingsList.stream()
+                .map(com.mohana.hotelanalytics.entity.Booking::getTotalRevenue)
+                .filter(java.util.Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal adr = (totalNights > 0)
+                ? totalRevenue.divide(BigDecimal.valueOf(totalNights), 2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        double alos = (activeCount > 0)
+                ? Math.round(((double) totalNights / activeCount) * 10.0) / 10.0
+                : 0.0;
+
+        double cancelRate = (totalBookings > 0)
+                ? Math.round(((double) cancelledCount / totalBookings) * 1000.0) / 10.0
+                : 0.0;
+
+        return OperationalMetricsResponse.builder()
+                .averageDailyRate(adr)
+                .averageLengthOfStay(alos)
+                .totalRoomNights(totalNights)
+                .cancellationRate(cancelRate)
+                .totalBookings(totalBookings)
+                .activeBookings(activeCount)
+                .cancelledBookings(cancelledCount)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public byte[] exportBookingsCsv() {
         StringBuilder csv = new StringBuilder();
         csv.append("ID,Hotel Name,Guest Name,Check-In Date,Check-Out Date,Guests,Room Type,Status,Total Revenue ($),Created At\n");

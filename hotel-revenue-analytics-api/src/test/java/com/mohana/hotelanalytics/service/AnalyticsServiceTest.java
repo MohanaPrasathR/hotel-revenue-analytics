@@ -117,6 +117,39 @@ class AnalyticsServiceTest {
     }
 
     @Test
+    @DisplayName("Should return operational KPI metrics including ADR and ALOS")
+    void getOperationalMetrics_Success() {
+        Booking b1 = Booking.builder()
+                .id(1L)
+                .bookingStatus(BookingStatus.CONFIRMED)
+                .checkInDate(java.time.LocalDate.of(2026, 9, 1))
+                .checkOutDate(java.time.LocalDate.of(2026, 9, 4)) // 3 nights
+                .totalRevenue(new BigDecimal("600.00"))
+                .build();
+
+        Booking b2 = Booking.builder()
+                .id(2L)
+                .bookingStatus(BookingStatus.CANCELLED)
+                .checkInDate(java.time.LocalDate.of(2026, 9, 2))
+                .checkOutDate(java.time.LocalDate.of(2026, 9, 5))
+                .totalRevenue(new BigDecimal("500.00"))
+                .build();
+
+        when(bookingRepository.findAll()).thenReturn(List.of(b1, b2));
+
+        OperationalMetricsResponse response = analyticsService.getOperationalMetrics();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getTotalBookings()).isEqualTo(2L);
+        assertThat(response.getActiveBookings()).isEqualTo(1L);
+        assertThat(response.getCancelledBookings()).isEqualTo(1L);
+        assertThat(response.getTotalRoomNights()).isEqualTo(3L);
+        assertThat(response.getAverageDailyRate()).isEqualTo(new BigDecimal("200.00"));
+        assertThat(response.getAverageLengthOfStay()).isEqualTo(3.0);
+        assertThat(response.getCancellationRate()).isEqualTo(50.0);
+    }
+
+    @Test
     @DisplayName("Should return top hotels by revenue limit")
     void getTopHotels_Success() {
         Object[] topHotelRow = new Object[]{"Ritz Carlton", new BigDecimal("4500.00"), 6L};
