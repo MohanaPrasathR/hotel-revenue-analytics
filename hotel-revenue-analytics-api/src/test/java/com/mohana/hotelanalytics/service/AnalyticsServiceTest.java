@@ -58,17 +58,23 @@ class AnalyticsServiceTest {
     }
 
     @Test
-    @DisplayName("Should return monthly revenue trends")
+    @DisplayName("Should return monthly revenue trends with period growth rate")
     void getRevenueByMonth_Success() {
-        Object[] monthRow = new Object[]{"2026-09", new BigDecimal("2500.00"), 4L};
-        List<Object[]> rows = Collections.singletonList(monthRow);
+        Object[] month1 = new Object[]{"2026-08", new BigDecimal("2000.00"), 3L};
+        Object[] month2 = new Object[]{"2026-09", new BigDecimal("2500.00"), 4L};
+        List<Object[]> rows = List.of(month1, month2);
         when(bookingRepository.findMonthlyRevenueTrend()).thenReturn(rows);
 
         List<MonthlyRevenueResponse> response = analyticsService.getRevenueByMonth();
 
-        assertThat(response).hasSize(1);
-        assertThat(response.get(0).getYearMonth()).isEqualTo("2026-09");
-        assertThat(response.get(0).getTotalRevenue()).isEqualTo(new BigDecimal("2500.00"));
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).getYearMonth()).isEqualTo("2026-08");
+        assertThat(response.get(0).getGrowthRatePercentage()).isNull();
+
+        assertThat(response.get(1).getYearMonth()).isEqualTo("2026-09");
+        assertThat(response.get(1).getTotalRevenue()).isEqualTo(new BigDecimal("2500.00"));
+        assertThat(response.get(1).getPreviousMonthRevenue()).isEqualTo(new BigDecimal("2000.00"));
+        assertThat(response.get(1).getGrowthRatePercentage()).isEqualTo(25.0);
     }
 
     @Test

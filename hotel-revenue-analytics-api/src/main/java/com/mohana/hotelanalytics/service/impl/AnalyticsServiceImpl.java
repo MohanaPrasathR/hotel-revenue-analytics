@@ -53,12 +53,32 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     public List<MonthlyRevenueResponse> getRevenueByMonth() {
         List<Object[]> results = bookingRepository.findMonthlyRevenueTrend();
 
-        return results.stream().map(row -> MonthlyRevenueResponse.builder()
-                .yearMonth((String) row[0])
-                .totalRevenue((BigDecimal) row[1])
-                .bookingCount((Long) row[2])
-                .build()
-        ).collect(Collectors.toList());
+        List<MonthlyRevenueResponse> monthlyResponses = new ArrayList<>();
+        BigDecimal previousMonthRevenue = null;
+
+        for (Object[] row : results) {
+            String yearMonth = (String) row[0];
+            BigDecimal totalRevenue = (BigDecimal) row[1];
+            Long count = (Long) row[2];
+
+            Double growthRate = null;
+            if (previousMonthRevenue != null && previousMonthRevenue.compareTo(BigDecimal.ZERO) > 0 && totalRevenue != null) {
+                double diff = totalRevenue.subtract(previousMonthRevenue).doubleValue();
+                growthRate = Math.round((diff / previousMonthRevenue.doubleValue()) * 1000.0) / 10.0;
+            }
+
+            monthlyResponses.add(MonthlyRevenueResponse.builder()
+                    .yearMonth(yearMonth)
+                    .totalRevenue(totalRevenue)
+                    .bookingCount(count)
+                    .previousMonthRevenue(previousMonthRevenue)
+                    .growthRatePercentage(growthRate)
+                    .build());
+
+            previousMonthRevenue = totalRevenue;
+        }
+
+        return monthlyResponses;
     }
 
     @Override

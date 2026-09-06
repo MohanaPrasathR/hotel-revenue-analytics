@@ -15,6 +15,8 @@ export interface MonthlyRevenueResponse {
   yearMonth: string; // YYYY-MM
   totalRevenue: number;
   bookingCount: number;
+  previousMonthRevenue?: number;
+  growthRatePercentage?: number;
 }
 
 export interface StatusCountResponse {
