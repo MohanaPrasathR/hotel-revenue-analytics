@@ -114,6 +114,7 @@ class BookingControllerTest {
         mockMvc.perform(get("/api/bookings/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.errorCode").value("RESOURCE_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("Booking not found with ID: 99"));
     }
 
