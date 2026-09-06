@@ -205,14 +205,16 @@ The application features a complete automated test suite:
 | HTTP Method | API Path | Responsibility | Status Codes |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/bookings` | Create new hotel reservation | `201 Created`, `400 Bad Request` |
-| `GET` | `/api/bookings` | List all reservations | `200 OK` |
+| `GET` | `/api/bookings` | List all reservations (supports query params: `hotel`, `roomType`, `status`, `checkInFrom`, `checkInTo`) | `200 OK` |
 | `GET` | `/api/bookings/{id}` | Get single reservation by ID | `200 OK`, `404 Not Found` |
 | `PUT` | `/api/bookings/{id}` | Update existing reservation | `200 OK`, `400 Bad Request`, `404 Not Found` |
 | `DELETE` | `/api/bookings/{id}` | Delete reservation record | `204 No Content`, `404 Not Found` |
 | `GET` | `/api/bookings/hotel/{hotelName}` | Filter bookings by hotel name | `200 OK` |
 | `GET` | `/api/analytics/total-revenue` | Cumulative realized revenue (excluding cancelled) | `200 OK` |
 | `GET` | `/api/analytics/revenue-by-hotel` | Revenue breakdown by hotel property | `200 OK` |
-| `GET` | `/api/analytics/revenue-by-month` | Time-series monthly revenue trends (`YYYY-MM`) | `200 OK` |
+| `GET` | `/api/analytics/revenue-by-month` | Time-series monthly revenue trends with MoM growth (`YYYY-MM`) | `200 OK` |
+| `GET` | `/api/analytics/revenue-by-room-type` | Revenue and yield distribution by room category | `200 OK` |
+| `GET` | `/api/analytics/operational-metrics` | Hospitality KPIs (ADR, ALOS, Total Room Nights, Cancellation Rate) | `200 OK` |
 | `GET` | `/api/analytics/booking-count-by-status` | Operational booking status counts | `200 OK` |
 | `GET` | `/api/analytics/average-revenue` | Mean revenue yield per active booking | `200 OK` |
 | `GET` | `/api/analytics/top-hotels?limit=5` | Ranked top $N$ hotel properties | `200 OK` |
@@ -225,19 +227,23 @@ The application features a complete automated test suite:
 
 ### ✅ Completed & Fully Verified Features
 - [x] Full-Stack decoupled microservice architecture (Angular 19 + Spring Boot 3 + Java 22)
-- [x] Executive Dashboard with 5 core KPI summary cards with trend percentage indicators
-- [x] Interactive Chart.js Monthly Revenue Yield Trend and Status Donut charts
+- [x] Executive Dashboard with core KPI summary cards with trend percentage indicators
+- [x] Hospitality Operational Metrics (Average Daily Rate ADR, Average Length of Stay ALOS, Total Room Nights)
+- [x] Room Category Revenue Distribution doughnut chart and breakdown table
+- [x] Time-series Monthly Revenue Yield Trend with Month-over-Month (MoM) growth calculations
 - [x] Full CRUD Reservations Manager with real-time search, multi-filters, and date filtering
 - [x] Add/Edit Modal Form with stay night duration preview and strict validation
 - [x] Delete confirmation modal dialog with zero accidental data loss
 - [x] Floating Toast notification system for instant user feedback
 - [x] Safe development-only Sample Data Loader with 23 realistic fictional records
+- [x] OWASP standard HTTP response security headers filter (`X-Frame-Options`, `X-Content-Type-Options`, CSP)
+- [x] Standardized RFC-7807 problem details error handling with correlation trace IDs
 - [x] In-memory Spring Cache abstraction with automatic cache invalidation on booking mutations
 - [x] One-click CSV financial reporting export engine in UI and REST API
 - [x] Multi-stage Dockerfiles and Docker Compose orchestration
 - [x] GitHub Actions CI automated build and test pipelines
-- [x] 30+ passing JUnit 5 / Jasmine automated tests
-- [x] OpenAPI 3.0 / Swagger UI documentation integration
+- [x] 35+ passing JUnit 5 / Jasmine automated tests
+- [x] OpenAPI 3.0 / Swagger UI documentation integration (v1.1.0)
 
 ### ⏳ Remaining Limitations & Roadmap Enhancements
 - [ ] **Role-Based Access Control (RBAC):** Authentication & authorization via Spring Security with OAuth2 / JWT tokens for Manager vs Receptionist roles.

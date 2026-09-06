@@ -58,7 +58,7 @@ export const environment = {
 | :--- | :--- | :--- |
 | `/dashboard` | **Executive Dashboard** | Summary KPI cards (Revenue, Bookings, Occupancy Rate, ADR, Cancellations), Date-Range Filtering, Monthly Yield Trend line chart, Status donut chart, Property leaderboard, and Recent reservations. |
 | `/bookings` | **Reservations Manager** | Full CRUD interface (Create, Read, Update, Delete), Search by guest/hotel/#ID, Filter by Status, Room Type, and Date Range. Real-time validation modal. |
-| `/analytics` | **Deep-Dive Analytics** | Top N ranked hotels with dynamic limit selector (Top 3, 5, 10), Property comparison bar chart, Monthly time-series chart, and historical metrics table. |
+| `/analytics` | **Deep-Dive Analytics** | Top N ranked hotels with dynamic limit selector (Top 3, 5, 10), Property comparison bar chart, Monthly time-series chart with MoM growth, Room category distribution doughnut chart, Operational KPIs (ADR, ALOS, Room Nights, Cancellation Rate), and one-click CSV export. |
 | `/about` | **Architecture & API Specs** | Technical architecture breakdown, tech stack badges, and interactive REST API endpoint catalog linking to Swagger UI. |
 
 ---
@@ -66,5 +66,6 @@ export const environment = {
 ## 🧩 Architectural Highlights
 - **Standalone Angular Components**: Modular, tree-shakeable architecture without legacy NgModule boilerplate.
 - **Typed RxJS HTTP Services**: `BookingService` and `AnalyticsService` mapping directly to Spring Boot backend DTO contracts.
-- **Interactive Chart.js Integration**: Dynamic time-series line charts, occupancy donuts, and property revenue bar graphs.
-- **Error Handling & State Resilience**: Graceful error banners with retry triggers, loading skeletons, and empty state cards.
+- **Interactive Chart.js Integration**: Dynamic time-series line charts, occupancy donuts, property bar graphs, and room category doughnut charts.
+- **Error Handling & State Resilience**: Graceful error banners with retry triggers, loading spinners, and empty state cards.
+- **Hospitality Operational Intelligence**: Real-time computation and display of ADR (Average Daily Rate), ALOS (Average Length of Stay), and Month-over-Month (MoM) revenue growth differentials.
