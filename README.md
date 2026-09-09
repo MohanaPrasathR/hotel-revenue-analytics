@@ -191,11 +191,12 @@ The application features a complete automated test suite:
 
 ---
 
-## 9. Input Validation & Error Handling
+## 9. Input Validation & Security Controls
 
 - **Date Range Constraint:** Strict validation ensuring `checkOutDate > checkInDate` on both Angular forms and Spring Boot controllers.
 - **Bean Validation:** `@NotBlank`, `@NotNull`, `@Min(1)`, and `@DecimalMin("0.01")` annotations on all incoming DTOs.
-- **RFC-7807 Error Responses:** Standardized JSON error payload with timestamp, HTTP status, error message, and validation field mappings.
+- **Rate Limiting & Throttling:** Sliding-window rate limiting filter enforcing a 100 req/min quota per IP address, with `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers. Exceeded requests return `429 Too Many Requests` with a `Retry-After` header.
+- **RFC-7807 Error Responses:** Standardized JSON error payload with timestamp, HTTP status, error message, trace ID, and validation field mappings.
 - **Frontend Resilience:** Animated loading spinners, graceful empty-state placeholder cards, floating toast alerts, and connection offline banners with retry triggers.
 
 ---
