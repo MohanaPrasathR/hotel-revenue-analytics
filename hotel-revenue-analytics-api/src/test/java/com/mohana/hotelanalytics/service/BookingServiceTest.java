@@ -164,4 +164,22 @@ class BookingServiceTest {
         assertThat(responses.get(0).getHotelName()).isEqualTo("Grand Hyatt");
         verify(bookingRepository, times(1)).findFilteredBookings("Grand", RoomType.DELUXE, BookingStatus.CONFIRMED, null, null);
     }
+
+    @Test
+    @DisplayName("Should return paginated bookings envelope")
+    void getPagedBookings_Success() {
+        org.springframework.data.domain.Page<Booking> page = new org.springframework.data.domain.PageImpl<>(
+                List.of(sampleBooking), org.springframework.data.domain.PageRequest.of(0, 10), 1);
+        when(bookingRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+
+        com.mohana.hotelanalytics.dto.response.PagedResponse<BookingResponse> response =
+                bookingService.getPagedBookings(0, 10, "createdAt", "desc");
+
+        assertThat(response).isNotNull();
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getTotalElements()).isEqualTo(1L);
+        assertThat(response.getTotalPages()).isEqualTo(1);
+        assertThat(response.isFirst()).isTrue();
+        verify(bookingRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
+    }
 }
