@@ -26,4 +26,7 @@ public interface BookingService {
     void deleteBooking(Long id);
 
     List<BookingResponse> getBookingsByHotel(String hotelName);
+
+    com.mohana.hotelanalytics.dto.response.PagedResponse<BookingResponse> getPagedBookings(
+            int page, int size, String sortBy, String sortDir);
 }

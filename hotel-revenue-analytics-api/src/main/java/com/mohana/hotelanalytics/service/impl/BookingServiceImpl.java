@@ -114,6 +114,19 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public com.mohana.hotelanalytics.dto.response.PagedResponse<BookingResponse> getPagedBookings(
+            int page, int size, String sortBy, String sortDir) {
+        org.springframework.data.domain.Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? org.springframework.data.domain.Sort.by(sortBy).descending()
+                : org.springframework.data.domain.Sort.by(sortBy).ascending();
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, sort);
+        org.springframework.data.domain.Page<BookingResponse> pagedResult = bookingRepository.findAll(pageable)
+                .map(this::mapToResponse);
+        return com.mohana.hotelanalytics.dto.response.PagedResponse.fromPage(pagedResult);
+    }
+
     private void validateDates(LocalDate checkIn, LocalDate checkOut) {
         if (checkOut.isBefore(checkIn) || checkOut.isEqual(checkIn)) {
             throw new InvalidBookingDatesException(

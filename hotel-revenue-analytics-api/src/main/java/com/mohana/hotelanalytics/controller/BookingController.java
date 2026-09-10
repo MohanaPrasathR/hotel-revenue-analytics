@@ -40,6 +40,17 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<com.mohana.hotelanalytics.dto.response.PagedResponse<BookingResponse>> getPagedBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        com.mohana.hotelanalytics.dto.response.PagedResponse<BookingResponse> response =
+                bookingService.getPagedBookings(page, size, sortBy, sortDir);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id) {
         BookingResponse response = bookingService.getBookingById(id);
