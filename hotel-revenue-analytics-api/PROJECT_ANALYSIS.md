@@ -313,5 +313,7 @@ $$\text{Average Revenue} = \frac{\sum \text{totalRevenue}}{\text{count of active
 
 ### B. Containerization & Observability
 - **Docker Compose:** Multi-container orchestration powering MySQL 8, Spring Boot 3 API, and Angular 19 SPA.
-- **Actuator Health Checks:** Live endpoint `/actuator/health` provides continuous liveness and readiness probes.
+- **Actuator Health Checks:** Live endpoint `/actuator/health` provides continuous liveness and readiness probes, enhanced with `HotelAnalyticsHealthIndicator` verifying database ping latency and record count.
+- **Micrometer Metrics:** Published gauges (`hotel.revenue.total`, `hotel.bookings.total.count`) and counters (`hotel.cache.evictions`) accessible via `/actuator/metrics` and Prometheus scrapers.
 - **MDC Correlation Logging:** `RequestLoggingFilter` stamps each incoming request with a unique `X-Correlation-ID` header and logs execution latencies.
+- **Rate Limiting:** `RateLimiterFilter` enforces sliding-window IP throttling with standard `X-RateLimit-*` response headers.
