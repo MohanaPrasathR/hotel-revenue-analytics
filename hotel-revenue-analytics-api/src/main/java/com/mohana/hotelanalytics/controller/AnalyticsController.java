@@ -64,6 +64,12 @@ public class AnalyticsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/summary-digest")
+    public ResponseEntity<RevenueSummaryDigestResponse> getRevenueSummaryDigest() {
+        RevenueSummaryDigestResponse response = analyticsService.getRevenueSummaryDigest();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/export/csv")
     public ResponseEntity<byte[]> exportBookingsCsv() {
         byte[] csvData = analyticsService.exportBookingsCsv();

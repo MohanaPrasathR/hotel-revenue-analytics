@@ -22,5 +22,7 @@ public interface AnalyticsService {
 
     OperationalMetricsResponse getOperationalMetrics();
 
+    RevenueSummaryDigestResponse getRevenueSummaryDigest();
+
     byte[] exportBookingsCsv();
 }

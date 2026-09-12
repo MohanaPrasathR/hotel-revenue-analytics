@@ -210,6 +210,30 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     @Transactional(readOnly = true)
+    public RevenueSummaryDigestResponse getRevenueSummaryDigest() {
+        TotalRevenueResponse totalRevenueResp = getTotalRevenue();
+        OperationalMetricsResponse opsMetrics = getOperationalMetrics();
+        List<TopHotelResponse> topHotels = getTopHotels(1);
+        List<RoomTypeRevenueResponse> roomTypes = getRevenueByRoomType();
+
+        String topHotel = topHotels.isEmpty() ? "N/A" : topHotels.get(0).getHotelName();
+        BigDecimal topHotelRev = topHotels.isEmpty() ? BigDecimal.ZERO : topHotels.get(0).getTotalRevenue();
+        String popularRoomType = roomTypes.isEmpty() ? "N/A" : roomTypes.get(0).getRoomType();
+
+        return RevenueSummaryDigestResponse.builder()
+                .totalRevenue(totalRevenueResp.getTotalRevenue())
+                .totalActiveBookings(totalRevenueResp.getEligibleBookingsCount())
+                .averageDailyRate(opsMetrics.getAverageDailyRate())
+                .cancellationRate(opsMetrics.getCancellationRate())
+                .topPerformingHotel(topHotel)
+                .topHotelRevenue(topHotelRev)
+                .mostPopularRoomType(popularRoomType)
+                .totalRoomNights(opsMetrics.getTotalRoomNights())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public byte[] exportBookingsCsv() {
         StringBuilder csv = new StringBuilder();
         csv.append("ID,Hotel Name,Guest Name,Check-In Date,Check-Out Date,Guests,Room Type,Status,Total Revenue ($),Created At\n");
