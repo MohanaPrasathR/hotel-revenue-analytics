@@ -194,4 +194,24 @@ class AnalyticsServiceTest {
         assertThat(csvContent).contains("Grand Horizon Resort");
         assertThat(csvContent).contains("Alice Walker");
     }
+
+    @Test
+    @DisplayName("Should generate accurate revenue summary digest")
+    void getRevenueSummaryDigest_Success() {
+        when(bookingRepository.findTotalRevenueOfActiveBookings()).thenReturn(new BigDecimal("12000.00"));
+        when(bookingRepository.countActiveBookings()).thenReturn(15L);
+        when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
+        when(bookingRepository.findTopHotelsByRevenue(PageRequest.of(0, 1)))
+                .thenReturn(List.of(new Object[]{"Grand Horizon", new BigDecimal("7000.00"), 8L}));
+        when(bookingRepository.findRevenueGroupedByRoomType())
+                .thenReturn(List.of(new Object[]{com.mohana.hotelanalytics.entity.RoomType.DELUXE, new BigDecimal("6000.00"), 6L}));
+
+        RevenueSummaryDigestResponse response = analyticsService.getRevenueSummaryDigest();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getTotalRevenue()).isEqualTo(new BigDecimal("12000.00"));
+        assertThat(response.getTopPerformingHotel()).isEqualTo("Grand Horizon");
+        assertThat(response.getTopHotelRevenue()).isEqualTo(new BigDecimal("7000.00"));
+        assertThat(response.getMostPopularRoomType()).isEqualTo("DELUXE");
+    }
 }
