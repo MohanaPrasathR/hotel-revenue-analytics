@@ -1,0 +1,18 @@
+<div class="toast-wrapper" aria-live="polite">
+  <div
+    *ngFor="let toast of (toasts$ | async)"
+    class="toast-item"
+    [ngClass]="'toast-' + toast.type"
+    role="alert">
+    <div class="toast-content">
+      <h4 *ngIf="toast.title" class="toast-title">{{ toast.title }}</h4>
+      <p class="toast-message">{{ toast.message }}</p>
+    </div>
+    <button
+      class="toast-close-btn"
+      (click)="toastService.dismiss(toast.id)"
+      aria-label="Close Notification">
+      &times;
+    </button>
+  </div>
+</div>
