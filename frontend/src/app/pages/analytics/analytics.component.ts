@@ -46,6 +46,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   errorMessage = '';
 
   topLimit = 5;
+  selectedPreset: '7d' | '30d' | '90d' | 'ytd' | 'all' = 'all';
 
   totalRevenue: TotalRevenueResponse | null = null;
   avgRevenue: AverageRevenueResponse | null = null;
@@ -55,6 +56,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   topHotels: TopHotelResponse[] = [];
   roomTypeRevenues: RoomTypeRevenueResponse[] = [];
   operationalMetrics: OperationalMetricsResponse | null = null;
+
+  applyPreset(preset: '7d' | '30d' | '90d' | 'ytd' | 'all'): void {
+    this.selectedPreset = preset;
+    this.loadAnalytics();
+  }
 
   ngOnInit(): void {
     this.loadAnalytics();

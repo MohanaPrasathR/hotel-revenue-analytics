@@ -8,6 +8,13 @@
     </div>
 
     <div class="flex items-center gap-3">
+      <div class="preset-pill-group">
+        <button [class.active]="selectedPreset === '7d'" (click)="applyPreset('7d')" class="preset-pill">7D</button>
+        <button [class.active]="selectedPreset === '30d'" (click)="applyPreset('30d')" class="preset-pill">30D</button>
+        <button [class.active]="selectedPreset === '90d'" (click)="applyPreset('90d')" class="preset-pill">90D</button>
+        <button [class.active]="selectedPreset === 'ytd'" (click)="applyPreset('ytd')" class="preset-pill">YTD</button>
+        <button [class.active]="selectedPreset === 'all'" (click)="applyPreset('all')" class="preset-pill">ALL</button>
+      </div>
       <button (click)="exportCsv()" class="export-btn" title="Download reservation records as CSV">
         <span>📥 Export CSV</span>
       </button>
