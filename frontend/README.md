@@ -65,6 +65,8 @@ export const environment = {
 
 ## 🧩 Architectural Highlights
 - **Standalone Angular Components**: Modular, tree-shakeable architecture without legacy NgModule boilerplate.
+- **Reactive Toast Notification System**: Subject-based `ToastService` and `ToastContainerComponent` delivering auto-dismissing feedback alerts for CRUD actions and network errors.
+- **Export Modal & Quick Date Presets**: Interactive export modal (`ExportModalComponent`) supporting CSV and JSON digests, keyboard shortcuts (Esc to close), and quick filter range pills (7D, 30D, 90D, YTD, All).
 - **Typed RxJS HTTP Services**: `BookingService` and `AnalyticsService` mapping directly to Spring Boot backend DTO contracts.
 - **Interactive Chart.js Integration**: Dynamic time-series line charts, occupancy donuts, property bar graphs, and room category doughnut charts.
 - **Error Handling & State Resilience**: Graceful error banners with retry triggers, loading spinners, and empty state cards.
