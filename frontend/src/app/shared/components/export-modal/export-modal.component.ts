@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -16,6 +16,13 @@ export class ExportModalComponent {
 
   selectedFormat: 'csv' | 'json' = 'csv';
   includeCancelled = true;
+
+  @HostListener('document:keydown.escape')
+  handleEscapeKey(): void {
+    if (this.isOpen) {
+      this.onClose();
+    }
+  }
 
   onClose(): void {
     this.close.emit();
