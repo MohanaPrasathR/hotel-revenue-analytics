@@ -1,0 +1,40 @@
+<div *ngIf="isOpen" class="modal-backdrop" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <h3 id="modal-title" class="modal-title">📥 Export Revenue & Bookings Data</h3>
+      <button (click)="onClose()" class="close-btn" aria-label="Close dialog">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Export Format</label>
+        <div class="format-options">
+          <label class="radio-card" [class.selected]="selectedFormat === 'csv'">
+            <input type="radio" name="format" value="csv" [(ngModel)]="selectedFormat">
+            <span class="format-title">📊 CSV Spreadsheet</span>
+            <span class="format-desc">Compatible with Excel, Google Sheets, & Tableau</span>
+          </label>
+          <label class="radio-card" [class.selected]="selectedFormat === 'json'">
+            <input type="radio" name="format" value="json" [(ngModel)]="selectedFormat">
+            <span class="format-title">🧾 JSON Digest</span>
+            <span class="format-desc">Structured financial payload for external BI integrations</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group mt-4">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="includeCancelled">
+          <span>Include Cancelled Bookings in raw records</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button (click)="onClose()" class="btn-cancel">Cancel</button>
+      <button (click)="onExport()" class="btn-confirm">
+        <span>Download Export File</span>
+      </button>
+    </div>
+  </div>
+</div>
