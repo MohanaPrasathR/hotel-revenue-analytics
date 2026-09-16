@@ -68,6 +68,12 @@ export class AnalyticsService {
     );
   }
 
+  getSummaryDigest(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/summary-digest`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   exportBookingsCsv(): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/export/csv`, {
       responseType: 'blob'
