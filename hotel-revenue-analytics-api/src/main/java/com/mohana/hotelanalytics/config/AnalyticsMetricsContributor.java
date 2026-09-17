@@ -31,7 +31,7 @@ public class AnalyticsMetricsContributor {
     }
 
     private double fetchTotalRevenue() {
-        BigDecimal total = bookingRepository.findTotalRevenue();
+        BigDecimal total = bookingRepository.findTotalRevenueOfActiveBookings();
         return total != null ? total.doubleValue() : 0.0;
     }
 }

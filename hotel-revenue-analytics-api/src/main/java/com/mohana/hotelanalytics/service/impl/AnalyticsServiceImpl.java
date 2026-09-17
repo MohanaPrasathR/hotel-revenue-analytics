@@ -218,7 +218,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         String topHotel = topHotels.isEmpty() ? "N/A" : topHotels.get(0).getHotelName();
         BigDecimal topHotelRev = topHotels.isEmpty() ? BigDecimal.ZERO : topHotels.get(0).getTotalRevenue();
-        String popularRoomType = roomTypes.isEmpty() ? "N/A" : roomTypes.get(0).getRoomType();
+        String popularRoomType = roomTypes.isEmpty() ? "N/A" : roomTypes.get(0).getRoomType().name();
 
         return RevenueSummaryDigestResponse.builder()
                 .totalRevenue(totalRevenueResp.getTotalRevenue())

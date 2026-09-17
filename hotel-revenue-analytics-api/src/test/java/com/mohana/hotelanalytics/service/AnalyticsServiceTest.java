@@ -202,9 +202,9 @@ class AnalyticsServiceTest {
         when(bookingRepository.countActiveBookings()).thenReturn(15L);
         when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
         when(bookingRepository.findTopHotelsByRevenue(PageRequest.of(0, 1)))
-                .thenReturn(List.of(new Object[]{"Grand Horizon", new BigDecimal("7000.00"), 8L}));
+                .thenReturn(Collections.singletonList(new Object[]{"Grand Horizon", new BigDecimal("7000.00"), 8L}));
         when(bookingRepository.findRevenueGroupedByRoomType())
-                .thenReturn(List.of(new Object[]{com.mohana.hotelanalytics.entity.RoomType.DELUXE, new BigDecimal("6000.00"), 6L}));
+                .thenReturn(Collections.singletonList(new Object[]{com.mohana.hotelanalytics.entity.RoomType.DELUXE, new BigDecimal("6000.00"), 6L}));
 
         RevenueSummaryDigestResponse response = analyticsService.getRevenueSummaryDigest();
 
