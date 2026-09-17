@@ -36,3 +36,4 @@ jobs:
         with:
           name: surefire-test-reports
           path: hotel-revenue-analytics-api/target/surefire-reports/
+          retention-days: 14
