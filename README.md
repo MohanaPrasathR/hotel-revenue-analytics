@@ -59,15 +59,19 @@ The **Hotel Revenue Analytics Platform** bridges operational booking workflows w
 |                         Angular 19 Frontend SPA (Port 4200)                     |
 |  - Standalone Pages: /dashboard, /bookings, /analytics, /about                  |
 |  - Reactive Services: BookingService, AnalyticsService (RxJS Observables)       |
-|  - Real-Time Visualizations: Chart.js Line & Donut Visualizers                  |
+|  - Toast Notification System (ToastService & ToastContainerComponent)          |
+|  - Real-Time Visualizations: Chart.js Line, Donut & Bar Visualizers             |
 |  - Node.js SPA Server with Transparent /api/* Reverse Proxy                     |
 +----------------------------------------+----------------------------------------+
                                          | HTTP / JSON (CORS Enabled)
                                          v
 +---------------------------------------------------------------------------------+
 |                       Spring Boot 3.2.3 REST API (Port 8080)                   |
+|  - Security & Throttling: SecurityHeadersFilter, RateLimiterFilter (100 req/m)  |
 |  - Controllers: BookingController, AnalyticsController                          |
 |  - Services: BookingService, AnalyticsService                                  |
+|  - Cache Abstraction: Spring Cache with Invalidation on Mutation (@CacheEvict)  |
+|  - Health & Metrics: HotelAnalyticsHealthIndicator, Micrometer Gauges/Counters  |
 |  - Repositories: BookingRepository (Custom Analytical JPQL Aggregations)        |
 |  - Validation: Jakarta Validation (@Valid, @DecimalMin, Date Bounds)            |
 |  - Exception Handling: GlobalExceptionHandler (RFC-7807 Standard Error DTOs)    |
