@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
           </div>
           <div>
             <div class="brand-title-row">
-              <span class="brand-title">Hotel Revenue Analytics</span>
+              <span class="brand-title">StayPulse</span>
               <span class="brand-tag">Angular 19</span>
             </div>
             <p class="brand-subtitle">Spring Boot 3 · JPA · H2 / MySQL</p>
@@ -34,6 +34,9 @@ import { RouterModule } from '@angular/router';
           </a>
           <a routerLink="/analytics" routerLinkActive="active" class="nav-link">
             <span>📈</span> Analytics
+          </a>
+          <a routerLink="/ai-insights" routerLinkActive="active" class="nav-link">
+            <span>✨</span> AI Insights
           </a>
           <a routerLink="/about" routerLinkActive="active" class="nav-link">
             <span>ℹ️</span> About
