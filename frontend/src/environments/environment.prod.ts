@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/api',
-  appName: 'Hotel Revenue Analytics'
+  // Relative URLs: nginx (Docker) or server.js proxies these to the backend services.
+  apiUrl: '/api',
+  aiUrl: '/api/ai',
+  appName: 'StayPulse'
 };

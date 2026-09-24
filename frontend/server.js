@@ -5,6 +5,7 @@ const path = require('path');
 const PORT = 4200;
 const BACKEND_HOST = 'localhost';
 const BACKEND_PORT = 8080;
+const AI_PORT = Number(process.env.AI_PORT || 8000);
 const DIST_DIR = path.join(__dirname, 'dist', 'hotel-revenue-frontend', 'browser');
 
 const MIME_TYPES = {
@@ -37,14 +38,16 @@ const server = http.createServer((req, res) => {
 
   // 1. PROXY /api/* REQUESTS DIRECTLY TO SPRING BOOT BACKEND ON PORT 8080
   if (req.url.startsWith('/api/')) {
+    // /api/ai/* goes to the Python AI service, everything else to Spring Boot
+    const targetPort = req.url.startsWith('/api/ai/') ? AI_PORT : BACKEND_PORT;
     const proxyReq = http.request({
       hostname: BACKEND_HOST,
-      port: BACKEND_PORT,
+      port: targetPort,
       path: req.url,
       method: req.method,
       headers: {
         ...req.headers,
-        host: `${BACKEND_HOST}:${BACKEND_PORT}`
+        host: `${BACKEND_HOST}:${targetPort}`
       }
     }, (proxyRes) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);
