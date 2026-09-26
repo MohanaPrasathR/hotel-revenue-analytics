@@ -1,0 +1,139 @@
+<div class="ai-page">
+  <div class="ai-header">
+    <div>
+      <h2 class="page-title">AI Insights</h2>
+      <p class="page-subtitle">Revenue forecast · anomaly detection · cancellation risk · rate recommendations</p>
+    </div>
+    <button (click)="load()" class="refresh-btn">↻ Refresh</button>
+  </div>
+
+  <div *ngIf="meta?.dataSource === 'demo'" class="demo-banner">
+    <strong>Demo data.</strong> {{ meta?.note }}
+  </div>
+
+  <app-error-banner *ngIf="errorMessage" [title]="'AI service unavailable'" [message]="errorMessage" (retry)="load()"></app-error-banner>
+  <app-loading-spinner *ngIf="isLoading" message="Training models on booking history..."></app-loading-spinner>
+
+  <ng-container *ngIf="!isLoading && !errorMessage && forecast">
+    <!-- KPI strip -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <span class="kpi-label">Next 30 days forecast</span>
+        <span class="kpi-value">₹{{ forecast.totalForecastRevenue | number: '1.0-0' }}</span>
+        <span class="kpi-sub" [class.up]="(forecast.changeVsLast30DaysPct ?? 0) >= 0" [class.down]="(forecast.changeVsLast30DaysPct ?? 0) < 0">
+          {{ (forecast.changeVsLast30DaysPct ?? 0) >= 0 ? '▲' : '▼' }} {{ forecast.changeVsLast30DaysPct | number: '1.1-1' }}% vs last 30 days
+        </span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Forecast error (backtest)</span>
+        <span class="kpi-value">{{ forecast.backtest.modelMAPE }}%</span>
+        <span class="kpi-sub">Baseline {{ forecast.backtest.seasonalNaiveMAPE }}% · last {{ forecast.backtest.days }} days</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Revenue at risk</span>
+        <span class="kpi-value">₹{{ risk?.expectedRevenueAtRisk | number: '1.0-0' }}</span>
+        <span class="kpi-sub">Across {{ risk?.upcomingBookings }} upcoming bookings</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Bookings flagged</span>
+        <span class="kpi-value">{{ anomalies?.count }}</span>
+        <span class="kpi-sub">For manual review</span>
+      </div>
+    </div>
+
+    <!-- Forecast chart -->
+    <section class="card">
+      <div class="card-head">
+        <h3>30-day revenue forecast</h3>
+        <span class="model-tag">{{ forecast.model }}</span>
+      </div>
+      <div class="chart-box"><canvas #forecastCanvas></canvas></div>
+    </section>
+
+    <div class="grid-2">
+      <!-- Cancellation risk -->
+      <section class="card">
+        <div class="card-head">
+          <h3>Most likely to cancel</h3>
+          <span class="model-tag" *ngIf="risk?.metrics">ROC-AUC {{ risk?.metrics?.rocAuc }}</span>
+        </div>
+        <p class="muted" *ngIf="risk?.note">{{ risk?.note }}</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Booking</th><th>Check-in</th><th>Lead time</th><th class="num">Risk</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of risk?.items">
+                <td><b>#{{ r.bookingId }}</b> {{ r.hotelName }}<br /><span class="muted">{{ r.roomType | titlecase }} · ₹{{ r.totalRevenue | number: '1.0-0' }}</span></td>
+                <td>{{ r.checkInDate | date: 'd MMM' }}</td>
+                <td>{{ r.leadTimeDays }} days</td>
+                <td class="num"><span class="risk-pill" [ngClass]="riskClass(r.cancellationRisk)">{{ r.cancellationRisk | percent: '1.0-0' }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted small" *ngIf="risk?.featureImportance?.length">
+          Strongest signal: <b>{{ risk?.featureImportance?.[0]?.feature }}</b>. Consider a deposit or reminder for high-risk stays.
+        </p>
+      </section>
+
+      <!-- Anomalies -->
+      <section class="card">
+        <div class="card-head">
+          <h3>Unusual bookings</h3>
+          <span class="model-tag">Isolation Forest + rules</span>
+        </div>
+        <ul class="anomaly-list">
+          <li *ngFor="let a of anomalies?.items">
+            <div class="anomaly-top"><b>#{{ a.bookingId }}</b> {{ a.hotelName }} · {{ a.checkInDate | date: 'd MMM y' }}</div>
+            <div class="anomaly-reason">{{ a.reason }}</div>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Pricing -->
+    <section class="card" *ngIf="pricing">
+      <div class="card-head">
+        <h3>Recommended nightly rates (next 14 days)</h3>
+        <span class="model-tag">{{ pricing.method }}</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Demand</th><th>Action</th><th class="num" *ngFor="let rt of pricingRoomTypes">{{ rt | titlecase }}</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of pricing.days">
+              <td>{{ d.date | date: 'EEE d MMM' }}</td>
+              <td>{{ d.demandIndex | number: '1.2-2' }}×</td>
+              <td><span class="action-pill" [ngClass]="'action-' + d.action">{{ d.action }}</span></td>
+              <td class="num" *ngFor="let rt of pricingRoomTypes">₹{{ d.rates[rt] | number: '1.0-0' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Assistant -->
+    <section class="card">
+      <div class="card-head">
+        <h3>Ask your data</h3>
+        <span class="model-tag">Answers use only the numbers above</span>
+      </div>
+      <div class="chat">
+        <div *ngFor="let t of chat" class="turn" [class.user]="t.role === 'user'">
+          <span>{{ t.text }}</span>
+          <small *ngIf="t.engine" class="muted"> · {{ t.engine === 'llm' ? 'LLM' : 'rule engine' }}</small>
+        </div>
+        <div *ngIf="asking" class="turn"><span class="muted">Thinking…</span></div>
+      </div>
+      <div class="suggestions" *ngIf="chat.length === 0">
+        <button *ngFor="let s of suggestions" (click)="ask(s)" class="chip">{{ s }}</button>
+      </div>
+      <form class="ask-row" (ngSubmit)="ask()">
+        <input id="ai-question" name="question" [(ngModel)]="question" placeholder="e.g. How much revenue is at risk from cancellations?" maxlength="500" />
+        <button type="submit" class="refresh-btn" [disabled]="asking || question.trim().length < 3">Ask</button>
+      </form>
+    </section>
+  </ng-container>
+</div>

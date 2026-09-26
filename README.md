@@ -1,4 +1,23 @@
-# 🏨 Hotel Revenue Analytics Dashboard
+# 🏨 StayPulse: Hotel Revenue Intelligence Platform
+
+> Formerly *Hotel Revenue Analytics Dashboard*. Spring Boot + Angular analytics, now with a Python
+> machine-learning service for forecasting, anomaly detection, cancellation risk and rate recommendations.
+
+## ✨ New: AI Insights
+
+| Feature | Model | Where |
+| --- | --- | --- |
+| 30-day revenue forecast (MAPE ~2.6% in a 28-day backtest on demo data) | Holt-Winters + booking-pickup blend | `ai-service/app/models.py` |
+| Unusual-booking detection with plain-English reasons | Isolation Forest + robust z-score + room-capacity rules | `/api/ai/anomalies` |
+| Cancellation risk and expected revenue at risk | Random Forest classifier | `/api/ai/cancellation-risk` |
+| Recommended nightly rates for 14 days | Demand index from forecast | `/api/ai/pricing` |
+| "Ask your data" assistant | Rule engine, optional LLM grounded in computed metrics | `/api/ai/ask` |
+
+Run everything with `docker compose up --build` and open http://localhost:4200/ai-insights,
+or see [`ai-service/README.md`](ai-service/README.md) to run the AI service on its own.
+
+---
+
 
 > **Enterprise Full-Stack Hotel Revenue Management & Financial Intelligence Platform**  
 > Engineered by **Mohana Prasath R** for scalable hospitality revenue analytics.
