@@ -8,7 +8,9 @@ import {
   MonthlyRevenueResponse,
   StatusCountResponse,
   AverageRevenueResponse,
-  TopHotelResponse
+  TopHotelResponse,
+  RoomTypeRevenueResponse,
+  OperationalMetricsResponse
 } from '../models/analytics.model';
 
 @Injectable({
