@@ -182,4 +182,23 @@ class BookingServiceTest {
         assertThat(response.isFirst()).isTrue();
         verify(bookingRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
     }
+
+    @Test
+    @DisplayName("Should fall back to safe defaults for unknown sort field and oversized page request")
+    void getPagedBookings_SanitizesUnsafeParameters() {
+        org.springframework.data.domain.Page<Booking> page = new org.springframework.data.domain.PageImpl<>(
+                List.of(sampleBooking), org.springframework.data.domain.PageRequest.of(0, 100), 1);
+        when(bookingRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+
+        bookingService.getPagedBookings(-5, 10_000, "notAField", "sideways");
+
+        org.mockito.ArgumentCaptor<org.springframework.data.domain.Pageable> captor =
+                org.mockito.ArgumentCaptor.forClass(org.springframework.data.domain.Pageable.class);
+        verify(bookingRepository).findAll(captor.capture());
+        org.springframework.data.domain.Pageable used = captor.getValue();
+        assertThat(used.getPageNumber()).isZero();
+        assertThat(used.getPageSize()).isEqualTo(100);
+        assertThat(used.getSort().getOrderFor("createdAt")).isNotNull();
+        assertThat(used.getSort().getOrderFor("createdAt").isAscending()).isTrue();
+    }
 }
