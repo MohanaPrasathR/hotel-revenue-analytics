@@ -21,6 +21,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
+    private static final int MAX_PAGE_SIZE = 100;
+    private static final String DEFAULT_SORT_FIELD = "createdAt";
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of(
+            "id", "hotelName", "guestName", "checkInDate", "checkOutDate",
+            "guests", "roomType", "bookingStatus", "totalRevenue", "createdAt");
+
     private final BookingRepository bookingRepository;
 
     @Override
@@ -118,10 +124,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public com.mohana.hotelanalytics.dto.response.PagedResponse<BookingResponse> getPagedBookings(
             int page, int size, String sortBy, String sortDir) {
-        org.springframework.data.domain.Sort sort = sortDir.equalsIgnoreCase("desc")
-                ? org.springframework.data.domain.Sort.by(sortBy).descending()
-                : org.springframework.data.domain.Sort.by(sortBy).ascending();
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, sort);
+        String safeSortBy = ALLOWED_SORT_FIELDS.contains(sortBy) ? sortBy : DEFAULT_SORT_FIELD;
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        org.springframework.data.domain.Sort sort = "desc".equalsIgnoreCase(sortDir)
+                ? org.springframework.data.domain.Sort.by(safeSortBy).descending()
+                : org.springframework.data.domain.Sort.by(safeSortBy).ascending();
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeSize, sort);
         org.springframework.data.domain.Page<BookingResponse> pagedResult = bookingRepository.findAll(pageable)
                 .map(this::mapToResponse);
         return com.mohana.hotelanalytics.dto.response.PagedResponse.fromPage(pagedResult);
