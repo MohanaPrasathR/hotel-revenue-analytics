@@ -170,6 +170,19 @@ class AnalyticsServiceTest {
     }
 
     @Test
+    @DisplayName("Should cap oversized top-hotel limit and default non-positive limits")
+    void getTopHotels_CapsAndDefaultsLimit() {
+        when(bookingRepository.findTopHotelsByRevenue(PageRequest.of(0, 50))).thenReturn(Collections.emptyList());
+        when(bookingRepository.findTopHotelsByRevenue(PageRequest.of(0, 5))).thenReturn(Collections.emptyList());
+
+        assertThat(analyticsService.getTopHotels(100000)).isEmpty();
+        assertThat(analyticsService.getTopHotels(-1)).isEmpty();
+
+        org.mockito.Mockito.verify(bookingRepository).findTopHotelsByRevenue(PageRequest.of(0, 50));
+        org.mockito.Mockito.verify(bookingRepository).findTopHotelsByRevenue(PageRequest.of(0, 5));
+    }
+
+    @Test
     @DisplayName("Should export bookings into valid CSV byte array")
     void exportBookingsCsv_Success() {
         Booking sampleBooking = Booking.builder()
