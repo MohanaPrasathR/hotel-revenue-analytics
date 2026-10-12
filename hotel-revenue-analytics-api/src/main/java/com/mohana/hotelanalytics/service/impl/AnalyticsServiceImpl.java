@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AnalyticsServiceImpl implements AnalyticsService {
 
+    private static final int DEFAULT_TOP_HOTELS = 5;
+    private static final int MAX_TOP_HOTELS = 50;
+
     private final BookingRepository bookingRepository;
 
     @Override
@@ -112,7 +115,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     @Transactional(readOnly = true)
     public List<TopHotelResponse> getTopHotels(int limit) {
-        int targetLimit = limit > 0 ? limit : 5;
+        int targetLimit = limit > 0 ? Math.min(limit, MAX_TOP_HOTELS) : DEFAULT_TOP_HOTELS;
         List<Object[]> results = bookingRepository.findTopHotelsByRevenue(PageRequest.of(0, targetLimit));
 
         List<TopHotelResponse> topHotels = new ArrayList<>();
