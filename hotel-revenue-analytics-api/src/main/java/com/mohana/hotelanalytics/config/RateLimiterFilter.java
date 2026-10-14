@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * In-memory sliding window rate limiting filter for REST API endpoints.
@@ -28,6 +29,8 @@ public class RateLimiterFilter extends OncePerRequestFilter {
     private static final long WINDOW_SIZE_MS = 60_000L;
 
     private final int maxRequests;
+    private final java.util.function.LongSupplier clock;
+    private final AtomicLong lastEviction;
     private final ConcurrentHashMap<String, ClientRequestTracker> clientTrackers = new ConcurrentHashMap<>();
 
     public RateLimiterFilter() {
@@ -35,7 +38,13 @@ public class RateLimiterFilter extends OncePerRequestFilter {
     }
 
     public RateLimiterFilter(int maxRequests) {
+        this(maxRequests, System::currentTimeMillis);
+    }
+
+    RateLimiterFilter(int maxRequests, java.util.function.LongSupplier clock) {
         this.maxRequests = maxRequests;
+        this.clock = clock;
+        this.lastEviction = new AtomicLong(clock.getAsLong());
     }
 
     @Override
@@ -54,7 +63,8 @@ public class RateLimiterFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String clientIp = resolveClientIp(request);
-        long currentTime = System.currentTimeMillis();
+        long currentTime = clock.getAsLong();
+        evictStaleTrackers(currentTime);
 
         ClientRequestTracker tracker = clientTrackers.computeIfAbsent(clientIp, ip -> new ClientRequestTracker(currentTime));
         int currentCount = tracker.registerHit(currentTime);
@@ -93,6 +103,22 @@ public class RateLimiterFilter extends OncePerRequestFilter {
             return xRealIp.trim();
         }
         return request.getRemoteAddr() != null ? request.getRemoteAddr() : "127.0.0.1";
+    }
+
+    /**
+     * Drops trackers whose window has expired so the map cannot grow without bound.
+     * Runs at most once per window to keep the per-request cost negligible.
+     */
+    private void evictStaleTrackers(long now) {
+        long last = lastEviction.get();
+        if (now - last < WINDOW_SIZE_MS || !lastEviction.compareAndSet(last, now)) {
+            return;
+        }
+        clientTrackers.entrySet().removeIf(e -> now - e.getValue().windowStart() > WINDOW_SIZE_MS);
+    }
+
+    int trackedClientCount() {
+        return clientTrackers.size();
     }
 
     public void resetClientTracker(String clientIp) {
