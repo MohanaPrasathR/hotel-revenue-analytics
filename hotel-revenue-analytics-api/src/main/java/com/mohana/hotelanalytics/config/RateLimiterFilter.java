@@ -14,8 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * In-memory sliding window rate limiting filter for REST API endpoints.
@@ -58,15 +56,9 @@ public class RateLimiterFilter extends OncePerRequestFilter {
         String clientIp = resolveClientIp(request);
         long currentTime = System.currentTimeMillis();
 
-        ClientRequestTracker tracker = clientTrackers.compute(clientIp, (ip, existing) -> {
-            if (existing == null || currentTime - existing.windowStartTime.get() > WINDOW_SIZE_MS) {
-                return new ClientRequestTracker(currentTime);
-            }
-            return existing;
-        });
-
-        int currentCount = tracker.requestCount.incrementAndGet();
-        long resetSeconds = Math.max(1, (WINDOW_SIZE_MS - (currentTime - tracker.windowStartTime.get())) / 1000);
+        ClientRequestTracker tracker = clientTrackers.computeIfAbsent(clientIp, ip -> new ClientRequestTracker(currentTime));
+        int currentCount = tracker.registerHit(currentTime);
+        long resetSeconds = Math.max(1, (WINDOW_SIZE_MS - (currentTime - tracker.windowStart())) / 1000);
 
         response.setHeader("X-RateLimit-Limit", String.valueOf(maxRequests));
         response.setHeader("X-RateLimit-Remaining", String.valueOf(Math.max(0, maxRequests - currentCount)));
@@ -108,12 +100,24 @@ public class RateLimiterFilter extends OncePerRequestFilter {
     }
 
     private static class ClientRequestTracker {
-        private final AtomicLong windowStartTime;
-        private final AtomicInteger requestCount;
+        private long windowStartTime;
+        private int requestCount;
 
-        public ClientRequestTracker(long startTime) {
-            this.windowStartTime = new AtomicLong(startTime);
-            this.requestCount = new AtomicInteger(0);
+        ClientRequestTracker(long startTime) {
+            this.windowStartTime = startTime;
+        }
+
+        /** Registers a hit, rolling the window over atomically when it has expired. */
+        synchronized int registerHit(long now) {
+            if (now - windowStartTime > WINDOW_SIZE_MS) {
+                windowStartTime = now;
+                requestCount = 0;
+            }
+            return ++requestCount;
+        }
+
+        synchronized long windowStart() {
+            return windowStartTime;
         }
     }
 }
