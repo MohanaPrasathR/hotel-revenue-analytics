@@ -82,4 +82,27 @@ class RateLimiterFilterTest {
         assertThat(response.getStatus()).isEqualTo(200);
         verify(filterChain, times(1)).doFilter(request, response);
     }
+
+    @Test
+    @DisplayName("Should evict expired client trackers and reset the window after it elapses")
+    void shouldEvictStaleTrackersAndRollWindow() throws ServletException, IOException {
+        java.util.concurrent.atomic.AtomicLong now = new java.util.concurrent.atomic.AtomicLong(1_000_000L);
+        RateLimiterFilter filter = new RateLimiterFilter(1, now::get);
+
+        for (String ip : new String[]{"10.0.0.1", "10.0.0.2", "10.0.0.3"}) {
+            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/bookings");
+            request.setRemoteAddr(ip);
+            filter.doFilter(request, new MockHttpServletResponse(), filterChain);
+        }
+        assertThat(filter.trackedClientCount()).isEqualTo(3);
+
+        now.addAndGet(61_000L);
+        MockHttpServletRequest later = new MockHttpServletRequest("GET", "/api/bookings");
+        later.setRemoteAddr("10.0.0.1");
+        MockHttpServletResponse laterResponse = new MockHttpServletResponse();
+        filter.doFilter(later, laterResponse, filterChain);
+
+        assertThat(laterResponse.getStatus()).isEqualTo(200);
+        assertThat(filter.trackedClientCount()).isEqualTo(1);
+    }
 }
