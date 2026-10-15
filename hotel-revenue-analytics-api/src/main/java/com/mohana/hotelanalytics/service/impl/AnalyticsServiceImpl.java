@@ -242,8 +242,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         csv.append("ID,Hotel Name,Guest Name,Check-In Date,Check-Out Date,Guests,Room Type,Status,Total Revenue ($),Created At\n");
         bookingRepository.findAll().forEach(b -> {
             csv.append(b.getId()).append(",")
-               .append("\"").append(b.getHotelName().replace("\"", "\"\"")).append("\",")
-               .append("\"").append(b.getGuestName().replace("\"", "\"\"")).append("\",")
+               .append(toSafeCsvText(b.getHotelName())).append(",")
+               .append(toSafeCsvText(b.getGuestName())).append(",")
                .append(b.getCheckInDate()).append(",")
                .append(b.getCheckOutDate()).append(",")
                .append(b.getGuests()).append(",")
@@ -253,5 +253,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                .append(b.getCreatedAt()).append("\n");
         });
         return csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Quotes a free-text value for CSV and neutralises spreadsheet formula injection
+     * (values beginning with =, +, -, @, tab or carriage return are prefixed with an apostrophe).
+     */
+    private static String toSafeCsvText(String value) {
+        String text = value == null ? "" : value;
+        if (!text.isEmpty() && "=+-@\t\r".indexOf(text.charAt(0)) >= 0) {
+            text = "'" + text;
+        }
+        return "\"" + text.replace("\"", "\"\"") + "\"";
     }
 }
