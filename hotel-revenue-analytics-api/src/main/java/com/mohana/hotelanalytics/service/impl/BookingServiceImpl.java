@@ -115,6 +115,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponse> getBookingsByHotel(String hotelName) {
+        if (hotelName == null || hotelName.isBlank()) {
+            return List.of();
+        }
         return bookingRepository.findByHotelNameIgnoreCase(hotelName.trim()).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
