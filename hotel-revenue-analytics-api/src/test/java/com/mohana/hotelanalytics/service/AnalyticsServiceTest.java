@@ -209,6 +209,29 @@ class AnalyticsServiceTest {
     }
 
     @Test
+    @DisplayName("Should neutralise spreadsheet formulas and escape quotes in exported CSV")
+    void exportBookingsCsv_NeutralisesFormulaInjection() {
+        Booking risky = Booking.builder()
+                .id(2L)
+                .hotelName("=HYPERLINK(\"http://evil.test\")")
+                .guestName("@SUM(A1)")
+                .checkInDate(java.time.LocalDate.of(2026, 9, 1))
+                .checkOutDate(java.time.LocalDate.of(2026, 9, 2))
+                .guests(1)
+                .roomType(com.mohana.hotelanalytics.entity.RoomType.DELUXE)
+                .bookingStatus(com.mohana.hotelanalytics.entity.BookingStatus.CONFIRMED)
+                .totalRevenue(new BigDecimal("100.00"))
+                .createdAt(java.time.LocalDateTime.now())
+                .build();
+        when(bookingRepository.findAll()).thenReturn(Collections.singletonList(risky));
+
+        String csv = new String(analyticsService.exportBookingsCsv(), java.nio.charset.StandardCharsets.UTF_8);
+
+        assertThat(csv).contains("\"'=HYPERLINK(\"\"http://evil.test\"\")\"");
+        assertThat(csv).contains("\"'@SUM(A1)\"");
+    }
+
+    @Test
     @DisplayName("Should generate accurate revenue summary digest")
     void getRevenueSummaryDigest_Success() {
         when(bookingRepository.findTotalRevenueOfActiveBookings()).thenReturn(new BigDecimal("12000.00"));
