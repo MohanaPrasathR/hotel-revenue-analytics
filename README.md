@@ -136,7 +136,7 @@ Frontend web dashboard will be live at: 👉 **`http://localhost:4200`**
 ## 6. Database Setup & Sample Data Seeder
 
 ### Development Mode (Default)
-The application includes an **idempotent Sample Data Seeder** ([`SampleDataLoader.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/config/SampleDataLoader.java)) that seeds **23 realistic, fictional reservations** across 4 properties (*Grand Horizon Resort*, *Starlight Palace Hotel*, *Royal Palm Haven*, *Azure Bay Suites*) on initial startup when the table is empty (`count == 0`).
+The application includes an **idempotent Sample Data Seeder** ([`SampleDataLoader.java`](hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/config/SampleDataLoader.java)) that seeds **23 realistic, fictional reservations** across 4 properties (*Grand Horizon Resort*, *Starlight Palace Hotel*, *Royal Palm Haven*, *Azure Bay Suites*) on initial startup when the table is empty (`count == 0`).
 - **No duplicates** will ever be created on restart.
 - No real personal information is used.
 
@@ -191,7 +191,7 @@ The application features a complete automated test suite:
   mvn test
   ```
   **Results:** `Tests run: 29, Failures: 0, Errors: 0, Skipped: 0` (100% passing).
-- **Integration Test Script:** An automated end-to-end PowerShell script ([`run_integration_tests.ps1`](file:///C:/Users/mohan/.gemini/antigravity-ide/brain/25769695-4375-48cd-8b43-91df00589844/scratch/run_integration_tests.ps1)) testing CORS preflight, analytical calculations, full CRUD cycles, 400 validation rejections, 404 lookups, and SPA routing.
+- **Integration Test Script:** An automated end-to-end PowerShell script (`run_integration_tests.ps1`) testing CORS preflight, analytical calculations, full CRUD cycles, 400 validation rejections, 404 lookups, and SPA routing.
 
 ---
 

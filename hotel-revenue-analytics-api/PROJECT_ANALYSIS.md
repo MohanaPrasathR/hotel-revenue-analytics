@@ -81,20 +81,20 @@ hotel-revenue-analytics-api/
 ## 2. How the Application Starts
 
 1. **Entrypoint Execution**:
-   - The application launches from [`HotelRevenueAnalyticsApplication.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/HotelRevenueAnalyticsApplication.java).
+   - The application launches from [`HotelRevenueAnalyticsApplication.java`](src/main/java/com/mohana/hotelanalytics/HotelRevenueAnalyticsApplication.java).
    - Marked with `@SpringBootApplication`, which combines `@Configuration`, `@EnableAutoConfiguration`, and `@ComponentScan(basePackages = "com.mohana.hotelanalytics")`.
    - The `main(String[] args)` method invokes `SpringApplication.run(HotelRevenueAnalyticsApplication.class, args)`.
 
 2. **Environment & Property Resolution**:
-   - Loads [`application.properties`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/resources/application.properties).
+   - Loads [`application.properties`](src/main/resources/application.properties).
    - Evaluates environment variables (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DRIVER`). If none are set, defaults to `jdbc:h2:mem:hotel_analytics_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`.
 
 3. **HikariCP Connection Pool & Hibernate Bootstrapping**:
    - Initializes HikariCP connection pool.
-   - Hibernate ORM parses the `@Entity` model ([`Booking.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/entity/Booking.java)) and automatically creates or updates the `bookings` table via `spring.jpa.hibernate.ddl-auto=update`.
+   - Hibernate ORM parses the `@Entity` model ([`Booking.java`](src/main/java/com/mohana/hotelanalytics/entity/Booking.java)) and automatically creates or updates the `bookings` table via `spring.jpa.hibernate.ddl-auto=update`.
 
 4. **Data Seeding (`data.sql`)**:
-   - `spring.sql.init.mode=always` and `spring.jpa.defer-datasource-initialization=true` trigger [`data.sql`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/resources/data.sql), inserting 12 realistic hotel reservations across 4 properties (*Grand Horizon Resort*, *Royal Palm Haven*, *Starlight Palace Hotel*, *Azure Bay Suites*).
+   - `spring.sql.init.mode=always` and `spring.jpa.defer-datasource-initialization=true` trigger [`data.sql`](src/main/resources/data.sql), inserting 12 realistic hotel reservations across 4 properties (*Grand Horizon Resort*, *Royal Palm Haven*, *Starlight Palace Hotel*, *Azure Bay Suites*).
 
 5. **Web Server & Routing Initialization**:
    - Embedded Tomcat web server boots up on port `8080`.
@@ -107,53 +107,53 @@ hotel-revenue-analytics-api/
 ## 3. Detailed Component Breakdown
 
 ### A. Configuration Layer
-- **[`OpenAPIConfig.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/config/OpenAPIConfig.java)**:
+- **[`OpenAPIConfig.java`](src/main/java/com/mohana/hotelanalytics/config/OpenAPIConfig.java)**:
   - Defines the OpenAPI 3.0 metadata bean (`customOpenAPI()`), documenting API title, version `1.0.0`, description, author contact, and MIT license.
-- **[`application.properties`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/resources/application.properties)**:
+- **[`application.properties`](src/main/resources/application.properties)**:
   - Configures server port (`8080`), database credentials with environmental fallbacks, Hibernate SQL logging, H2 web console (`/h2-console`), and OpenAPI paths.
 
 ### B. Controller Layer
-- **[`BookingController.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/controller/BookingController.java)** (`/api/bookings`):
+- **[`BookingController.java`](src/main/java/com/mohana/hotelanalytics/controller/BookingController.java)** (`/api/bookings`):
   - Exposes standard RESTful operations: `POST` (create), `GET` (list all), `GET /{id}` (by ID), `PUT /{id}` (update), `DELETE /{id}` (delete), and `GET /hotel/{hotelName}` (search by property).
   - Uses `@Valid` for automatic input validation against Jakarta constraints.
-- **[`AnalyticsController.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/controller/AnalyticsController.java)** (`/api/analytics`):
+- **[`AnalyticsController.java`](src/main/java/com/mohana/hotelanalytics/controller/AnalyticsController.java)** (`/api/analytics`):
   - Exposes read-only financial query endpoints: `/total-revenue`, `/revenue-by-hotel`, `/revenue-by-month`, `/booking-count-by-status`, `/average-revenue`, and `/top-hotels?limit=N`.
 
 ### C. Service Layer
-- **[`BookingService.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/service/BookingService.java) & [`BookingServiceImpl.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/service/impl/BookingServiceImpl.java)**:
+- **[`BookingService.java`](src/main/java/com/mohana/hotelanalytics/service/BookingService.java) & [`BookingServiceImpl.java`](src/main/java/com/mohana/hotelanalytics/service/impl/BookingServiceImpl.java)**:
   - Manages booking transactions (`@Transactional`).
   - Enforces date integrity: validates that `checkOutDate` is strictly after `checkInDate`.
   - Performs DTO-to-Entity and Entity-to-DTO mappings.
   - Throws domain exceptions (`ResourceNotFoundException`, `InvalidBookingDatesException`) when validations fail.
-- **[`AnalyticsService.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/service/AnalyticsService.java) & [`AnalyticsServiceImpl.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/service/impl/AnalyticsServiceImpl.java)**:
+- **[`AnalyticsService.java`](src/main/java/com/mohana/hotelanalytics/service/AnalyticsService.java) & [`AnalyticsServiceImpl.java`](src/main/java/com/mohana/hotelanalytics/service/impl/AnalyticsServiceImpl.java)**:
   - Executes read-only transactions (`@Transactional(readOnly = true)`).
   - Processes raw relational aggregate tuples (`List<Object[]>`) returned by JPA queries and transforms them into clean, typed response DTOs.
   - Implements dynamic ranking algorithms and rounding logic (`RoundingMode.HALF_UP`).
 
 ### D. Repository Layer
-- **[`BookingRepository.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/repository/BookingRepository.java)**:
+- **[`BookingRepository.java`](src/main/java/com/mohana/hotelanalytics/repository/BookingRepository.java)**:
   - Extends `JpaRepository<Booking, Long>`.
   - Contains custom JPQL queries optimized for financial aggregations (filtering out `CANCELLED` bookings).
   - Supports pagination (`Pageable`) for top-hotel ranking limits.
 
 ### E. Entity / Domain Model
-- **[`Booking.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/entity/Booking.java)**:
+- **[`Booking.java`](src/main/java/com/mohana/hotelanalytics/entity/Booking.java)**:
   - Maps to table `bookings`.
   - Fields: `id` (PK, Identity), `hotelName`, `guestName`, `checkInDate`, `checkOutDate`, `guests`, `roomType` (Enum String), `bookingStatus` (Enum String), `totalRevenue` (`BigDecimal(12,2)`), `createdAt` (`LocalDateTime`).
   - Includes `@PrePersist` hook to automatically set `createdAt` timestamp on entity creation.
-- **[`BookingStatus.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/entity/BookingStatus.java)**:
+- **[`BookingStatus.java`](src/main/java/com/mohana/hotelanalytics/entity/BookingStatus.java)**:
   - Enum values: `CONFIRMED`, `CHECKED_IN`, `CHECKED_OUT`, `CANCELLED`.
-- **[`RoomType.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/entity/RoomType.java)**:
+- **[`RoomType.java`](src/main/java/com/mohana/hotelanalytics/entity/RoomType.java)**:
   - Enum values: `SINGLE`, `DOUBLE`, `SUITE`, `DELUXE`, `PRESIDENTIAL`.
 
 ### F. Exception Handling Layer
-- **[`GlobalExceptionHandler.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/exception/GlobalExceptionHandler.java)**:
+- **[`GlobalExceptionHandler.java`](src/main/java/com/mohana/hotelanalytics/exception/GlobalExceptionHandler.java)**:
   - Intercepts exceptions globally using `@RestControllerAdvice`.
   - Converts `ResourceNotFoundException` ➔ `404 Not Found`.
   - Converts `InvalidBookingDatesException` ➔ `400 Bad Request`.
   - Converts `MethodArgumentNotValidException` ➔ `400 Bad Request` with a detailed field-by-field error map (`validationErrors`).
   - Converts unhandled exceptions ➔ `500 Internal Server Error`.
-  - Returns standardized RFC-7807 compliant [`ErrorResponse`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/exception/ErrorResponse.java) JSON payloads.
+  - Returns standardized RFC-7807 compliant [`ErrorResponse`](src/main/java/com/mohana/hotelanalytics/exception/ErrorResponse.java) JSON payloads.
 
 ---
 
@@ -202,14 +202,14 @@ hotel-revenue-analytics-api/
 The project provides multiple frontend interfaces:
 
 1. **Embedded Visual Analytics Dashboard** (`http://localhost:8080/`):
-   - Located at [`src/main/resources/static/index.html`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/resources/static/index.html).
+   - Located at [`src/main/resources/static/index.html`](src/main/resources/static/index.html).
    - Features: Real-time KPI cards, interactive Chart.js line charts (monthly yield), donut charts (operational status), bar charts (hotel comparisons), property leaderboard, search & filter reservations table, and an interactive "+ New Reservation" modal.
 2. **Interactive Swagger UI API Explorer** (`http://localhost:8080/swagger-ui.html`):
    - Auto-generated OpenAPI 3.0 documentation allowing live execution of every endpoint directly in the browser.
 3. **H2 Database Web Console** (`http://localhost:8080/h2-console`):
    - Direct SQL query interface to inspect database tables, schemas, and indices.
 4. **Next.js Portfolio Interactive Showcase** (`/demos/hotel-revenue`):
-   - Located at [`app/demos/hotel-revenue/page.tsx`](file:///c:/MohanaPrasath.in/app/demos/hotel-revenue/page.tsx) within the parent portfolio application.
+   - Located at `app/demos/hotel-revenue/page.tsx` within the parent portfolio application.
 
 ---
 
@@ -249,7 +249,7 @@ sequenceDiagram
 
 ## 8. Revenue and Occupancy Calculation Algorithms
 
-All financial analytics are calculated dynamically using JPQL queries defined in [`BookingRepository.java`](file:///c:/MohanaPrasath.in/hotel-revenue-analytics-api/src/main/java/com/mohana/hotelanalytics/repository/BookingRepository.java):
+All financial analytics are calculated dynamically using JPQL queries defined in [`BookingRepository.java`](src/main/java/com/mohana/hotelanalytics/repository/BookingRepository.java):
 
 ### 1. Total Realized Gross Revenue
 $$\text{Total Revenue} = \sum_{\text{status} \neq \text{'CANCELLED'}} \text{totalRevenue}$$
