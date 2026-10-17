@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
           </div>
           <div>
             <div class="brand-title-row">
-              <span class="brand-title">Hotel Revenue Analytics</span>
+              <span class="brand-title">Stay Pulse</span>
               <span class="brand-tag">Angular 19</span>
             </div>
             <p class="brand-subtitle">Spring Boot 3 · JPA · H2 / MySQL</p>
