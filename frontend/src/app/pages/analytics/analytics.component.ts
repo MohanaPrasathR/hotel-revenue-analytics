@@ -297,7 +297,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `hotel_revenue_export_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `stay_pulse_export_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         window.URL.revokeObjectURL(url);
       },
