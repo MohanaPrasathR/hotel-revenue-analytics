@@ -1,6 +1,6 @@
-# Hotel Revenue Analytics — Angular Frontend
+# Stay Pulse — Angular Frontend
 
-A modern, responsive, high-performance **Angular 19 & TypeScript** web application providing an executive dashboard, reservations management (CRUD), deep-dive revenue/occupancy analytics, and API documentation for the **Hotel Revenue Analytics Spring Boot** backend.
+A modern, responsive, high-performance **Angular 19 & TypeScript** web application providing an executive dashboard, reservations management (CRUD), deep-dive revenue/occupancy analytics, and API documentation for the **Stay Pulse Spring Boot** backend.
 
 ---
 
@@ -34,7 +34,7 @@ To compile and generate an optimized production bundle:
 ```bash
 npm run build
 ```
-The compiled assets will be output to `dist/hotel-revenue-frontend/`.
+The compiled assets will be output to `dist/stay-pulse-frontend/`.
 
 ---
 
@@ -46,7 +46,7 @@ API endpoints are configured in `src/environments/environment.ts`:
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080/api', // Spring Boot REST API base URL
-  appName: 'Hotel Revenue Analytics'
+  appName: 'Stay Pulse'
 };
 ```
 
