@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "hotel-revenue-frontend": {
+    "stay-pulse-frontend": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -16,7 +16,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/hotel-revenue-frontend",
+            "outputPath": "dist/stay-pulse-frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "hotel-revenue-frontend:build:production"
+              "buildTarget": "stay-pulse-frontend:build:production"
             },
             "development": {
-              "buildTarget": "hotel-revenue-frontend:build:development"
+              "buildTarget": "stay-pulse-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

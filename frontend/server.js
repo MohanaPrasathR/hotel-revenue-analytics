@@ -5,7 +5,7 @@ const path = require('path');
 const PORT = 4200;
 const BACKEND_HOST = 'localhost';
 const BACKEND_PORT = 8080;
-const DIST_DIR = path.join(__dirname, 'dist', 'hotel-revenue-frontend', 'browser');
+const DIST_DIR = path.join(__dirname, 'dist', 'stay-pulse-frontend', 'browser');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
