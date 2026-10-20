@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.mohana</groupId>
-    <artifactId>hotel-revenue-analytics-api</artifactId>
+    <artifactId>stay-pulse-api</artifactId>
     <version>1.1.0</version>
-    <name>hotel-revenue-analytics-api</name>
-    <description>Production-quality Hotel Revenue &amp; Occupancy Analytics REST API</description>
+    <name>stay-pulse-api</name>
+    <description>Stay Pulse: production-quality hotel revenue &amp; occupancy analytics REST API</description>
 
     <properties>
         <java.version>17</java.version>
