@@ -1,17 +1,17 @@
 services:
   mysql-db:
     image: mysql:8.0
-    container_name: hotel-analytics-mysql
+    container_name: stay-pulse-mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: hotel_analytics_db
+      MYSQL_DATABASE: stay_pulse_db
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - hotel-network
+      - stay-pulse-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 10s
@@ -22,36 +22,36 @@ services:
     build:
       context: ./hotel-revenue-analytics-api
       dockerfile: Dockerfile
-    container_name: hotel-analytics-api
+    container_name: stay-pulse-api
     restart: unless-stopped
     depends_on:
       mysql-db:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_URL: jdbc:mysql://mysql-db:3306/hotel_analytics_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_URL: jdbc:mysql://mysql-db:3306/stay_pulse_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       DB_USERNAME: root
       DB_PASSWORD: root
     ports:
       - "8080:8080"
     networks:
-      - hotel-network
+      - stay-pulse-network
 
   frontend-dashboard:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: hotel-analytics-frontend
+    container_name: stay-pulse-frontend
     restart: unless-stopped
     depends_on:
       - backend-api
     ports:
       - "4200:80"
     networks:
-      - hotel-network
+      - stay-pulse-network
 
 networks:
-  hotel-network:
+  stay-pulse-network:
     driver: bridge
 
 volumes:
