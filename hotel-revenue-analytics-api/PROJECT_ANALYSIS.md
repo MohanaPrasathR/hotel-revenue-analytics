@@ -19,8 +19,8 @@ hotel-revenue-analytics-api/
 ├── PROJECT_ANALYSIS.md                        # Detailed architecture & technical analysis
 ├── src/
 │   ├── main/
-│   │   ├── java/com/mohana/hotelanalytics/
-│   │   │   ├── HotelRevenueAnalyticsApplication.java   # Spring Boot Application bootstrap entrypoint
+│   │   ├── java/com/mohana/staypulse/
+│   │   │   ├── StayPulseApplication.java   # Spring Boot Application bootstrap entrypoint
 │   │   │   ├── config/
 │   │   │   │   └── OpenAPIConfig.java                  # OpenAPI 3.0 / Swagger UI metadata bean
 │   │   │   ├── controller/
@@ -62,8 +62,8 @@ hotel-revenue-analytics-api/
 │   │       └── static/
 │   │           └── index.html                          # Embedded visual analytics dashboard (Tailwind + Chart.js)
 │   └── test/
-│       └── java/com/mohana/hotelanalytics/
-│           ├── HotelRevenueAnalyticsApplicationTests.java # Context smoke test
+│       └── java/com/mohana/staypulse/
+│           ├── StayPulseApplicationTests.java # Context smoke test
 │           ├── controller/
 │           │   ├── BookingControllerTest.java          # MockMvc unit tests for BookingController
 │           │   └── AnalyticsControllerTest.java        # MockMvc unit tests for AnalyticsController
@@ -81,9 +81,9 @@ hotel-revenue-analytics-api/
 ## 2. How the Application Starts
 
 1. **Entrypoint Execution**:
-   - The application launches from [`HotelRevenueAnalyticsApplication.java`](src/main/java/com/mohana/hotelanalytics/HotelRevenueAnalyticsApplication.java).
-   - Marked with `@SpringBootApplication`, which combines `@Configuration`, `@EnableAutoConfiguration`, and `@ComponentScan(basePackages = "com.mohana.hotelanalytics")`.
-   - The `main(String[] args)` method invokes `SpringApplication.run(HotelRevenueAnalyticsApplication.class, args)`.
+   - The application launches from [`StayPulseApplication.java`](src/main/java/com/mohana/staypulse/StayPulseApplication.java).
+   - Marked with `@SpringBootApplication`, which combines `@Configuration`, `@EnableAutoConfiguration`, and `@ComponentScan(basePackages = "com.mohana.staypulse")`.
+   - The `main(String[] args)` method invokes `SpringApplication.run(StayPulseApplication.class, args)`.
 
 2. **Environment & Property Resolution**:
    - Loads [`application.properties`](src/main/resources/application.properties).
@@ -91,7 +91,7 @@ hotel-revenue-analytics-api/
 
 3. **HikariCP Connection Pool & Hibernate Bootstrapping**:
    - Initializes HikariCP connection pool.
-   - Hibernate ORM parses the `@Entity` model ([`Booking.java`](src/main/java/com/mohana/hotelanalytics/entity/Booking.java)) and automatically creates or updates the `bookings` table via `spring.jpa.hibernate.ddl-auto=update`.
+   - Hibernate ORM parses the `@Entity` model ([`Booking.java`](src/main/java/com/mohana/staypulse/entity/Booking.java)) and automatically creates or updates the `bookings` table via `spring.jpa.hibernate.ddl-auto=update`.
 
 4. **Data Seeding (`data.sql`)**:
    - `spring.sql.init.mode=always` and `spring.jpa.defer-datasource-initialization=true` trigger [`data.sql`](src/main/resources/data.sql), inserting 12 realistic hotel reservations across 4 properties (*Grand Horizon Resort*, *Royal Palm Haven*, *Starlight Palace Hotel*, *Azure Bay Suites*).
@@ -107,53 +107,53 @@ hotel-revenue-analytics-api/
 ## 3. Detailed Component Breakdown
 
 ### A. Configuration Layer
-- **[`OpenAPIConfig.java`](src/main/java/com/mohana/hotelanalytics/config/OpenAPIConfig.java)**:
+- **[`OpenAPIConfig.java`](src/main/java/com/mohana/staypulse/config/OpenAPIConfig.java)**:
   - Defines the OpenAPI 3.0 metadata bean (`customOpenAPI()`), documenting API title, version `1.0.0`, description, author contact, and MIT license.
 - **[`application.properties`](src/main/resources/application.properties)**:
   - Configures server port (`8080`), database credentials with environmental fallbacks, Hibernate SQL logging, H2 web console (`/h2-console`), and OpenAPI paths.
 
 ### B. Controller Layer
-- **[`BookingController.java`](src/main/java/com/mohana/hotelanalytics/controller/BookingController.java)** (`/api/bookings`):
+- **[`BookingController.java`](src/main/java/com/mohana/staypulse/controller/BookingController.java)** (`/api/bookings`):
   - Exposes standard RESTful operations: `POST` (create), `GET` (list all), `GET /{id}` (by ID), `PUT /{id}` (update), `DELETE /{id}` (delete), and `GET /hotel/{hotelName}` (search by property).
   - Uses `@Valid` for automatic input validation against Jakarta constraints.
-- **[`AnalyticsController.java`](src/main/java/com/mohana/hotelanalytics/controller/AnalyticsController.java)** (`/api/analytics`):
+- **[`AnalyticsController.java`](src/main/java/com/mohana/staypulse/controller/AnalyticsController.java)** (`/api/analytics`):
   - Exposes read-only financial query endpoints: `/total-revenue`, `/revenue-by-hotel`, `/revenue-by-month`, `/booking-count-by-status`, `/average-revenue`, and `/top-hotels?limit=N`.
 
 ### C. Service Layer
-- **[`BookingService.java`](src/main/java/com/mohana/hotelanalytics/service/BookingService.java) & [`BookingServiceImpl.java`](src/main/java/com/mohana/hotelanalytics/service/impl/BookingServiceImpl.java)**:
+- **[`BookingService.java`](src/main/java/com/mohana/staypulse/service/BookingService.java) & [`BookingServiceImpl.java`](src/main/java/com/mohana/staypulse/service/impl/BookingServiceImpl.java)**:
   - Manages booking transactions (`@Transactional`).
   - Enforces date integrity: validates that `checkOutDate` is strictly after `checkInDate`.
   - Performs DTO-to-Entity and Entity-to-DTO mappings.
   - Throws domain exceptions (`ResourceNotFoundException`, `InvalidBookingDatesException`) when validations fail.
-- **[`AnalyticsService.java`](src/main/java/com/mohana/hotelanalytics/service/AnalyticsService.java) & [`AnalyticsServiceImpl.java`](src/main/java/com/mohana/hotelanalytics/service/impl/AnalyticsServiceImpl.java)**:
+- **[`AnalyticsService.java`](src/main/java/com/mohana/staypulse/service/AnalyticsService.java) & [`AnalyticsServiceImpl.java`](src/main/java/com/mohana/staypulse/service/impl/AnalyticsServiceImpl.java)**:
   - Executes read-only transactions (`@Transactional(readOnly = true)`).
   - Processes raw relational aggregate tuples (`List<Object[]>`) returned by JPA queries and transforms them into clean, typed response DTOs.
   - Implements dynamic ranking algorithms and rounding logic (`RoundingMode.HALF_UP`).
 
 ### D. Repository Layer
-- **[`BookingRepository.java`](src/main/java/com/mohana/hotelanalytics/repository/BookingRepository.java)**:
+- **[`BookingRepository.java`](src/main/java/com/mohana/staypulse/repository/BookingRepository.java)**:
   - Extends `JpaRepository<Booking, Long>`.
   - Contains custom JPQL queries optimized for financial aggregations (filtering out `CANCELLED` bookings).
   - Supports pagination (`Pageable`) for top-hotel ranking limits.
 
 ### E. Entity / Domain Model
-- **[`Booking.java`](src/main/java/com/mohana/hotelanalytics/entity/Booking.java)**:
+- **[`Booking.java`](src/main/java/com/mohana/staypulse/entity/Booking.java)**:
   - Maps to table `bookings`.
   - Fields: `id` (PK, Identity), `hotelName`, `guestName`, `checkInDate`, `checkOutDate`, `guests`, `roomType` (Enum String), `bookingStatus` (Enum String), `totalRevenue` (`BigDecimal(12,2)`), `createdAt` (`LocalDateTime`).
   - Includes `@PrePersist` hook to automatically set `createdAt` timestamp on entity creation.
-- **[`BookingStatus.java`](src/main/java/com/mohana/hotelanalytics/entity/BookingStatus.java)**:
+- **[`BookingStatus.java`](src/main/java/com/mohana/staypulse/entity/BookingStatus.java)**:
   - Enum values: `CONFIRMED`, `CHECKED_IN`, `CHECKED_OUT`, `CANCELLED`.
-- **[`RoomType.java`](src/main/java/com/mohana/hotelanalytics/entity/RoomType.java)**:
+- **[`RoomType.java`](src/main/java/com/mohana/staypulse/entity/RoomType.java)**:
   - Enum values: `SINGLE`, `DOUBLE`, `SUITE`, `DELUXE`, `PRESIDENTIAL`.
 
 ### F. Exception Handling Layer
-- **[`GlobalExceptionHandler.java`](src/main/java/com/mohana/hotelanalytics/exception/GlobalExceptionHandler.java)**:
+- **[`GlobalExceptionHandler.java`](src/main/java/com/mohana/staypulse/exception/GlobalExceptionHandler.java)**:
   - Intercepts exceptions globally using `@RestControllerAdvice`.
   - Converts `ResourceNotFoundException` ➔ `404 Not Found`.
   - Converts `InvalidBookingDatesException` ➔ `400 Bad Request`.
   - Converts `MethodArgumentNotValidException` ➔ `400 Bad Request` with a detailed field-by-field error map (`validationErrors`).
   - Converts unhandled exceptions ➔ `500 Internal Server Error`.
-  - Returns standardized RFC-7807 compliant [`ErrorResponse`](src/main/java/com/mohana/hotelanalytics/exception/ErrorResponse.java) JSON payloads.
+  - Returns standardized RFC-7807 compliant [`ErrorResponse`](src/main/java/com/mohana/staypulse/exception/ErrorResponse.java) JSON payloads.
 
 ---
 
@@ -249,14 +249,14 @@ sequenceDiagram
 
 ## 8. Revenue and Occupancy Calculation Algorithms
 
-All financial analytics are calculated dynamically using JPQL queries defined in [`BookingRepository.java`](src/main/java/com/mohana/hotelanalytics/repository/BookingRepository.java):
+All financial analytics are calculated dynamically using JPQL queries defined in [`BookingRepository.java`](src/main/java/com/mohana/staypulse/repository/BookingRepository.java):
 
 ### 1. Total Realized Gross Revenue
 $$\text{Total Revenue} = \sum_{\text{status} \neq \text{'CANCELLED'}} \text{totalRevenue}$$
 - **JPQL:**
   ```sql
   SELECT SUM(b.totalRevenue) FROM Booking b 
-  WHERE b.bookingStatus <> com.mohana.hotelanalytics.entity.BookingStatus.CANCELLED
+  WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED
   ```
 - **Rationale:** Cancelled bookings represent unrealized revenue and are strictly excluded from financial totals.
 
@@ -265,7 +265,7 @@ $$\text{Total Revenue} = \sum_{\text{status} \neq \text{'CANCELLED'}} \text{tota
   ```sql
   SELECT b.hotelName, SUM(b.totalRevenue), COUNT(b)
   FROM Booking b
-  WHERE b.bookingStatus <> com.mohana.hotelanalytics.entity.BookingStatus.CANCELLED
+  WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED
   GROUP BY b.hotelName
   ORDER BY SUM(b.totalRevenue) DESC
   ```
@@ -276,7 +276,7 @@ $$\text{Total Revenue} = \sum_{\text{status} \neq \text{'CANCELLED'}} \text{tota
   ```sql
   SELECT SUBSTRING(CAST(b.checkInDate AS string), 1, 7), SUM(b.totalRevenue), COUNT(b)
   FROM Booking b
-  WHERE b.bookingStatus <> com.mohana.hotelanalytics.entity.BookingStatus.CANCELLED
+  WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED
   GROUP BY SUBSTRING(CAST(b.checkInDate AS string), 1, 7)
   ORDER BY SUBSTRING(CAST(b.checkInDate AS string), 1, 7) ASC
   ```
@@ -296,7 +296,7 @@ $$\text{Average Revenue} = \frac{\sum \text{totalRevenue}}{\text{count of active
 - **JPQL:**
   ```sql
   SELECT AVG(b.totalRevenue) FROM Booking b 
-  WHERE b.bookingStatus <> com.mohana.hotelanalytics.entity.BookingStatus.CANCELLED
+  WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED
   ```
 - Computed with `BigDecimal` rounding to 2 decimal places using `RoundingMode.HALF_UP`.
 

@@ -11,7 +11,8 @@ import {
   StatusCountResponse,
   AverageRevenueResponse,
   TopHotelResponse,
-  RoomTypeRevenueResponse
+  RoomTypeRevenueResponse,
+  OperationalMetricsResponse
 } from '../../core/models/analytics.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorBannerComponent } from '../../shared/components/error-banner/error-banner.component';
