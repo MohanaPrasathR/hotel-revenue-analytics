@@ -1,0 +1,104 @@
+package com.mohana.staypulse.repository;
+
+import com.mohana.staypulse.entity.Booking;
+import com.mohana.staypulse.entity.BookingStatus;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+@Repository
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+    List<Booking> findByHotelNameIgnoreCase(String hotelName);
+
+    List<Booking> findByBookingStatus(BookingStatus bookingStatus);
+
+    /**
+     * Filtered search across multiple optional criteria.
+     */
+    @Query("SELECT b FROM Booking b WHERE " +
+           "(:hotelName IS NULL OR LOWER(b.hotelName) LIKE LOWER(CONCAT('%', :hotelName, '%'))) AND " +
+           "(:roomType IS NULL OR b.roomType = :roomType) AND " +
+           "(:bookingStatus IS NULL OR b.bookingStatus = :bookingStatus) AND " +
+           "(CAST(:checkInFrom AS date) IS NULL OR b.checkInDate >= :checkInFrom) AND " +
+           "(CAST(:checkInTo AS date) IS NULL OR b.checkInDate <= :checkInTo) " +
+           "ORDER BY b.checkInDate DESC")
+    List<Booking> findFilteredBookings(
+            @Param("hotelName") String hotelName,
+            @Param("roomType") com.mohana.staypulse.entity.RoomType roomType,
+            @Param("bookingStatus") BookingStatus bookingStatus,
+            @Param("checkInFrom") LocalDate checkInFrom,
+            @Param("checkInTo") LocalDate checkInTo);
+
+    /**
+     * Query 1: Calculates total revenue across non-cancelled bookings.
+     */
+    @Query("SELECT SUM(b.totalRevenue) FROM Booking b WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED")
+    BigDecimal findTotalRevenueOfActiveBookings();
+
+    /**
+     * Query 1b: Counts total non-cancelled bookings.
+     */
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED")
+    Long countActiveBookings();
+
+    /**
+     * Query 2: Groups cumulative revenue and booking count by hotel name.
+     */
+    @Query("SELECT b.hotelName, SUM(b.totalRevenue), COUNT(b) " +
+           "FROM Booking b " +
+           "WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED " +
+           "GROUP BY b.hotelName " +
+           "ORDER BY SUM(b.totalRevenue) DESC")
+    List<Object[]> findRevenueGroupedByHotel();
+
+    /**
+     * Query 3: Groups revenue by check-in month (YYYY-MM) across both H2 and MySQL databases.
+     */
+    @Query("SELECT SUBSTRING(CAST(b.checkInDate AS string), 1, 7), SUM(b.totalRevenue), COUNT(b) " +
+           "FROM Booking b " +
+           "WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED " +
+           "GROUP BY SUBSTRING(CAST(b.checkInDate AS string), 1, 7) " +
+           "ORDER BY SUBSTRING(CAST(b.checkInDate AS string), 1, 7) ASC")
+    List<Object[]> findMonthlyRevenueTrend();
+
+    /**
+     * Query 4: Groups total booking count by BookingStatus enum value.
+     */
+    @Query("SELECT b.bookingStatus, COUNT(b) " +
+           "FROM Booking b " +
+           "GROUP BY b.bookingStatus")
+    List<Object[]> findBookingCountGroupedByStatus();
+
+    /**
+     * Query 5: Calculates average revenue per non-cancelled booking.
+     */
+    @Query("SELECT AVG(b.totalRevenue) FROM Booking b WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED")
+    Double findAverageRevenuePerBooking();
+
+    /**
+     * Query 6: Retrieves top N hotels ordered by total cumulative revenue using Pageable limit.
+     */
+    @Query("SELECT b.hotelName, SUM(b.totalRevenue), COUNT(b) " +
+           "FROM Booking b " +
+           "WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED " +
+           "GROUP BY b.hotelName " +
+           "ORDER BY SUM(b.totalRevenue) DESC")
+    List<Object[]> findTopHotelsByRevenue(Pageable pageable);
+
+    /**
+     * Query 7: Groups cumulative revenue and booking count by RoomType enum value.
+     */
+    @Query("SELECT b.roomType, SUM(b.totalRevenue), COUNT(b) " +
+           "FROM Booking b " +
+           "WHERE b.bookingStatus <> com.mohana.staypulse.entity.BookingStatus.CANCELLED " +
+           "GROUP BY b.roomType " +
+           "ORDER BY SUM(b.totalRevenue) DESC")
+    List<Object[]> findRevenueGroupedByRoomType();
+}

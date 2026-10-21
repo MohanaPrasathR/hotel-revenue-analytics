@@ -1,0 +1,164 @@
+package com.mohana.staypulse.service.impl;
+
+import com.mohana.staypulse.dto.request.BookingCreateRequest;
+import com.mohana.staypulse.dto.request.BookingUpdateRequest;
+import com.mohana.staypulse.dto.response.BookingResponse;
+import com.mohana.staypulse.entity.Booking;
+import com.mohana.staypulse.exception.InvalidBookingDatesException;
+import com.mohana.staypulse.exception.ResourceNotFoundException;
+import com.mohana.staypulse.repository.BookingRepository;
+import com.mohana.staypulse.service.BookingService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class BookingServiceImpl implements BookingService {
+
+    private static final int MAX_PAGE_SIZE = 100;
+    private static final String DEFAULT_SORT_FIELD = "createdAt";
+    private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of(
+            "id", "hotelName", "guestName", "checkInDate", "checkOutDate",
+            "guests", "roomType", "bookingStatus", "totalRevenue", "createdAt");
+
+    private final BookingRepository bookingRepository;
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "revenueAnalytics", allEntries = true)
+    public BookingResponse createBooking(BookingCreateRequest request) {
+        validateDates(request.getCheckInDate(), request.getCheckOutDate());
+
+        Booking booking = Booking.builder()
+                .hotelName(request.getHotelName().trim())
+                .guestName(request.getGuestName().trim())
+                .checkInDate(request.getCheckInDate())
+                .checkOutDate(request.getCheckOutDate())
+                .guests(request.getGuests())
+                .roomType(request.getRoomType())
+                .bookingStatus(request.getBookingStatus())
+                .totalRevenue(request.getTotalRevenue())
+                .build();
+
+        Booking savedBooking = bookingRepository.save(booking);
+        return mapToResponse(savedBooking);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getAllBookings() {
+        return bookingRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getBookingsWithFilters(
+            String hotel,
+            com.mohana.staypulse.entity.RoomType roomType,
+            com.mohana.staypulse.entity.BookingStatus status,
+            LocalDate checkInFrom,
+            LocalDate checkInTo) {
+        String sanitizedHotel = (hotel != null && !hotel.trim().isEmpty()) ? hotel.trim() : null;
+        return bookingRepository.findFilteredBookings(sanitizedHotel, roomType, status, checkInFrom, checkInTo).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BookingResponse getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
+        return mapToResponse(booking);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "revenueAnalytics", allEntries = true)
+    public BookingResponse updateBooking(Long id, BookingUpdateRequest request) {
+        Booking existingBooking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
+
+        validateDates(request.getCheckInDate(), request.getCheckOutDate());
+
+        existingBooking.setHotelName(request.getHotelName().trim());
+        existingBooking.setGuestName(request.getGuestName().trim());
+        existingBooking.setCheckInDate(request.getCheckInDate());
+        existingBooking.setCheckOutDate(request.getCheckOutDate());
+        existingBooking.setGuests(request.getGuests());
+        existingBooking.setRoomType(request.getRoomType());
+        existingBooking.setBookingStatus(request.getBookingStatus());
+        existingBooking.setTotalRevenue(request.getTotalRevenue());
+
+        Booking updatedBooking = bookingRepository.save(existingBooking);
+        return mapToResponse(updatedBooking);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "revenueAnalytics", allEntries = true)
+    public void deleteBooking(Long id) {
+        if (!bookingRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Booking not found with ID: " + id);
+        }
+        bookingRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getBookingsByHotel(String hotelName) {
+        if (hotelName == null || hotelName.isBlank()) {
+            return List.of();
+        }
+        return bookingRepository.findByHotelNameIgnoreCase(hotelName.trim()).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public com.mohana.staypulse.dto.response.PagedResponse<BookingResponse> getPagedBookings(
+            int page, int size, String sortBy, String sortDir) {
+        String safeSortBy = ALLOWED_SORT_FIELDS.contains(sortBy) ? sortBy : DEFAULT_SORT_FIELD;
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        org.springframework.data.domain.Sort sort = "desc".equalsIgnoreCase(sortDir)
+                ? org.springframework.data.domain.Sort.by(safeSortBy).descending()
+                : org.springframework.data.domain.Sort.by(safeSortBy).ascending();
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeSize, sort);
+        org.springframework.data.domain.Page<BookingResponse> pagedResult = bookingRepository.findAll(pageable)
+                .map(this::mapToResponse);
+        return com.mohana.staypulse.dto.response.PagedResponse.fromPage(pagedResult);
+    }
+
+    private void validateDates(LocalDate checkIn, LocalDate checkOut) {
+        if (checkOut.isBefore(checkIn) || checkOut.isEqual(checkIn)) {
+            throw new InvalidBookingDatesException(
+                    "Check-out date (" + checkOut + ") must be strictly after check-in date (" + checkIn + ")"
+            );
+        }
+    }
+
+    private BookingResponse mapToResponse(Booking booking) {
+        return BookingResponse.builder()
+                .id(booking.getId())
+                .hotelName(booking.getHotelName())
+                .guestName(booking.getGuestName())
+                .checkInDate(booking.getCheckInDate())
+                .checkOutDate(booking.getCheckOutDate())
+                .guests(booking.getGuests())
+                .roomType(booking.getRoomType())
+                .bookingStatus(booking.getBookingStatus())
+                .totalRevenue(booking.getTotalRevenue())
+                .createdAt(booking.getCreatedAt())
+                .build();
+    }
+}
