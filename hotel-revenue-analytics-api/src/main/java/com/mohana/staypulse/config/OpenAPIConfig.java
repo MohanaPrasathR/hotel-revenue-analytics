@@ -14,9 +14,9 @@ public class OpenAPIConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Hotel Revenue Analytics API")
+                        .title("Stay Pulse API")
                         .version("1.1.0")
-                        .description("Production-grade REST API for managing hotel bookings, calculating real-time revenue analytics, ADR/ALOS operational KPI metrics, and room-type financial distributions.")
+                        .description("Stay Pulse: production-grade REST API for managing hotel bookings, calculating real-time revenue analytics, ADR/ALOS operational KPI metrics, and room-type financial distributions.")
                         .contact(new Contact()
                                 .name("Mohana Prasath R")
                                 .email("mr0928@srmist.edu.in")
