@@ -14,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HotelAnalyticsHealthIndicatorTest {
+class StayPulseHealthIndicatorTest {
 
     @Mock
     private BookingRepository bookingRepository;
 
     @InjectMocks
-    private HotelAnalyticsHealthIndicator healthIndicator;
+    private StayPulseHealthIndicator healthIndicator;
 
     @Test
     @DisplayName("Should return UP health status with booking metrics when database is accessible")

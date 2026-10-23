@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class HotelAnalyticsHealthIndicator implements HealthIndicator {
+public class StayPulseHealthIndicator implements HealthIndicator {
 
     private final BookingRepository bookingRepository;
 
