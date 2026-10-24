@@ -1,4 +1,4 @@
-# 🏨 Hotel Revenue Analytics — Spring Boot REST Microservice
+# 🏨 Stay Pulse — Spring Boot REST Microservice
 
 A high-performance Spring Boot 3 / Java 22 REST API providing reservation management and financial revenue analytics.
 
@@ -11,12 +11,12 @@ A high-performance Spring Boot 3 / Java 22 REST API providing reservation manage
 mvn clean package -DskipTests
 
 # Run application JAR
-java -jar target/hotel-revenue-analytics-api-1.0.0-SNAPSHOT.jar
+java -jar target/stay-pulse-api-1.1.0.jar
 ```
 
 - **API Base URL:** `http://localhost:8080/api`
 - **Swagger Documentation:** `http://localhost:8080/swagger-ui/index.html`
-- **H2 Web Console:** `http://localhost:8080/h2-console` (`jdbc:h2:mem:hotel_analytics_db`)
+- **H2 Web Console:** `http://localhost:8080/h2-console` (`jdbc:h2:mem:stay_pulse_db`)
 - **Frontend Dashboard:** `http://localhost:4200` (from `../frontend/`)
 
 ---
@@ -53,7 +53,7 @@ Seeded with 23 development sample reservations via `SampleDataLoader.java` on em
 ### MySQL 8.0 (Production)
 Configurable in `src/main/resources/application.properties`:
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/hotel_analytics_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3306/stay_pulse_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=your_password
 ```
