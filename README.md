@@ -1,4 +1,4 @@
-# 🏨 Hotel Revenue Analytics Dashboard
+# 🏨 Stay Pulse — Hotel Revenue Analytics Dashboard
 
 > **Enterprise Full-Stack Hotel Revenue Management & Financial Intelligence Platform**  
 > Engineered by **Mohana Prasath R** for scalable hospitality revenue analytics.
@@ -30,7 +30,7 @@ Modern hotel revenue managers, asset managers, and property directors face signi
 - **Manual Spreadsheet Inefficiencies:** Manual computation of **Average Daily Rate (ADR)** and **Revenue Per Available Room (RevPAR)** introduces human error and slows down pricing decisions.
 
 ### The Engineered Solution
-The **Hotel Revenue Analytics Platform** bridges operational booking workflows with instant financial intelligence:
+The **Stay Pulse Platform** bridges operational booking workflows with instant financial intelligence:
 - Executes **sub-second analytical JPQL aggregations** directly in the relational database engine.
 - Excludes cancelled reservations automatically from gross earnings calculations.
 - Computes **occupancy percentage rates** and **ADR** in real-time.
@@ -71,7 +71,7 @@ The **Hotel Revenue Analytics Platform** bridges operational booking workflows w
 |  - Controllers: BookingController, AnalyticsController                          |
 |  - Services: BookingService, AnalyticsService                                  |
 |  - Cache Abstraction: Spring Cache with Invalidation on Mutation (@CacheEvict)  |
-|  - Health & Metrics: HotelAnalyticsHealthIndicator, Micrometer Gauges/Counters  |
+|  - Health & Metrics: StayPulseHealthIndicator, Micrometer Gauges/Counters  |
 |  - Repositories: BookingRepository (Custom Analytical JPQL Aggregations)        |
 |  - Validation: Jakarta Validation (@Valid, @DecimalMin, Date Bounds)            |
 |  - Exception Handling: GlobalExceptionHandler (RFC-7807 Standard Error DTOs)    |
@@ -81,7 +81,7 @@ The **Hotel Revenue Analytics Platform** bridges operational booking workflows w
                                          v
 +---------------------------------------------------------------------------------+
 |                           Relational Database Layer                             |
-|  - Development Mode: H2 In-Memory (jdbc:h2:mem:hotel_analytics_db)              |
+|  - Development Mode: H2 In-Memory (jdbc:h2:mem:stay_pulse_db)              |
 |  - Production Mode: MySQL 8.0 (Configurable via application.properties)         |
 +---------------------------------------------------------------------------------+
 ```
@@ -118,7 +118,7 @@ docker-compose up --build
 ```bash
 cd hotel-revenue-analytics-api
 mvn clean package -DskipTests
-java -jar target/hotel-revenue-analytics-api-1.0.0-SNAPSHOT.jar
+java -jar target/stay-pulse-api-1.1.0.jar
 ```
 Backend API will be running live at: 👉 **`http://localhost:8080`**  
 OpenAPI / Swagger UI sandbox at: 👉 **`http://localhost:8080/swagger-ui/index.html`**
@@ -145,7 +145,7 @@ To run in production without demo data:
 1. Set `app.data.seed.enabled=false` in `application.properties`
 2. Or run with the `prod` profile:
    ```bash
-   java -jar target/hotel-revenue-analytics-api-1.0.0-SNAPSHOT.jar --spring.profiles.active=prod
+   java -jar target/stay-pulse-api-1.1.0.jar --spring.profiles.active=prod
    ```
 
 ---
