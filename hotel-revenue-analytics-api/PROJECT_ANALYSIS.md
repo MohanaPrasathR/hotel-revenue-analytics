@@ -1,4 +1,4 @@
-# Hotel Revenue Analytics API — Comprehensive Project Analysis
+# Stay Pulse API — Comprehensive Project Analysis
 
 > **Analysis Date:** August 2026  
 > **Framework:** Spring Boot 3.2.3  
@@ -13,7 +13,7 @@
 The project is structured following clean enterprise **Layered Architecture (Controller-Service-Repository-Entity-DTO)** principles, ensuring separation of concerns, testability, and maintainability.
 
 ```
-hotel-revenue-analytics-api/
+stay-pulse-api/
 ├── pom.xml                                    # Maven dependencies & build configuration
 ├── README.md                                  # Project overview, setup instructions & API specification
 ├── PROJECT_ANALYSIS.md                        # Detailed architecture & technical analysis
@@ -87,7 +87,7 @@ hotel-revenue-analytics-api/
 
 2. **Environment & Property Resolution**:
    - Loads [`application.properties`](src/main/resources/application.properties).
-   - Evaluates environment variables (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DRIVER`). If none are set, defaults to `jdbc:h2:mem:hotel_analytics_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`.
+   - Evaluates environment variables (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DRIVER`). If none are set, defaults to `jdbc:h2:mem:stay_pulse_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`.
 
 3. **HikariCP Connection Pool & Hibernate Bootstrapping**:
    - Initializes HikariCP connection pool.
@@ -163,7 +163,7 @@ hotel-revenue-analytics-api/
 | :--- | :--- | :--- |
 | **Engine** | **H2 In-Memory Database** | **MySQL 8.0** |
 | **JDBC Driver** | `org.h2.Driver` | `com.mysql.cj.jdbc.Driver` |
-| **Connection URL** | `jdbc:h2:mem:hotel_analytics_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE` | `jdbc:mysql://localhost:3306/hotel_revenue_db` |
+| **Connection URL** | `jdbc:h2:mem:stay_pulse_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE` | `jdbc:mysql://localhost:3306/hotel_revenue_db` |
 | **Default User** | `sa` | `hotel_user` (or via `DB_USERNAME`) |
 | **Web Console** | Available at `http://localhost:8080/h2-console` | N/A (MySQL Workbench / CLI) |
 | **DDL Schema Strategy** | `hibernate.ddl-auto=update` (automatically creates tables) | `hibernate.ddl-auto=update` |
@@ -313,7 +313,7 @@ $$\text{Average Revenue} = \frac{\sum \text{totalRevenue}}{\text{count of active
 
 ### B. Containerization & Observability
 - **Docker Compose:** Multi-container orchestration powering MySQL 8, Spring Boot 3 API, and Angular 19 SPA.
-- **Actuator Health Checks:** Live endpoint `/actuator/health` provides continuous liveness and readiness probes, enhanced with `HotelAnalyticsHealthIndicator` verifying database ping latency and record count.
+- **Actuator Health Checks:** Live endpoint `/actuator/health` provides continuous liveness and readiness probes, enhanced with `StayPulseHealthIndicator` verifying database ping latency and record count.
 - **Micrometer Metrics:** Published gauges (`hotel.revenue.total`, `hotel.bookings.total.count`) and counters (`hotel.cache.evictions`) accessible via `/actuator/metrics` and Prometheus scrapers.
 - **MDC Correlation Logging:** `RequestLoggingFilter` stamps each incoming request with a unique `X-Correlation-ID` header and logs execution latencies.
 - **Rate Limiting:** `RateLimiterFilter` enforces sliding-window IP throttling with standard `X-RateLimit-*` response headers.
