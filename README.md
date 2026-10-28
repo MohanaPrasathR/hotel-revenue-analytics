@@ -116,7 +116,7 @@ docker-compose up --build
 
 ### Step 1: Start the Spring Boot Backend (Port 8080)
 ```bash
-cd hotel-revenue-analytics-api
+cd stay-pulse-api
 mvn clean package -DskipTests
 java -jar target/stay-pulse-api-1.1.0.jar
 ```
@@ -136,7 +136,7 @@ Frontend web dashboard will be live at: 👉 **`http://localhost:4200`**
 ## 6. Database Setup & Sample Data Seeder
 
 ### Development Mode (Default)
-The application includes an **idempotent Sample Data Seeder** ([`SampleDataLoader.java`](hotel-revenue-analytics-api/src/main/java/com/mohana/staypulse/config/SampleDataLoader.java)) that seeds **23 realistic, fictional reservations** across 4 properties (*Grand Horizon Resort*, *Starlight Palace Hotel*, *Royal Palm Haven*, *Azure Bay Suites*) on initial startup when the table is empty (`count == 0`).
+The application includes an **idempotent Sample Data Seeder** ([`SampleDataLoader.java`](stay-pulse-api/src/main/java/com/mohana/staypulse/config/SampleDataLoader.java)) that seeds **23 realistic, fictional reservations** across 4 properties (*Grand Horizon Resort*, *Starlight Palace Hotel*, *Royal Palm Haven*, *Azure Bay Suites*) on initial startup when the table is empty (`count == 0`).
 - **No duplicates** will ever be created on restart.
 - No real personal information is used.
 
@@ -187,7 +187,7 @@ The application features a complete automated test suite:
 - **Backend Tests:** 29 JUnit 5 / Spring Boot Tests covering controllers, services, JPQL repositories, and integration flows.
 - **Execution Command:**
   ```bash
-  cd hotel-revenue-analytics-api
+  cd stay-pulse-api
   mvn test
   ```
   **Results:** `Tests run: 29, Failures: 0, Errors: 0, Skipped: 0` (100% passing).
