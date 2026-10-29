@@ -201,4 +201,19 @@ class BookingServiceTest {
         assertThat(used.getSort().getOrderFor("createdAt")).isNotNull();
         assertThat(used.getSort().getOrderFor("createdAt").isAscending()).isTrue();
     }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when updating a missing booking")
+    void updateBooking_NotFound_ThrowsException() {
+        when(bookingRepository.findById(404L)).thenReturn(Optional.empty());
+        BookingUpdateRequest request = BookingUpdateRequest.builder()
+                .hotelName("Grand Hyatt").guestName("John Doe")
+                .checkInDate(LocalDate.of(2026, 9, 1)).checkOutDate(LocalDate.of(2026, 9, 3))
+                .guests(2).roomType(RoomType.DELUXE).bookingStatus(BookingStatus.CONFIRMED)
+                .totalRevenue(new BigDecimal("400.00")).build();
+
+        assertThatThrownBy(() -> bookingService.updateBooking(404L, request))
+                .isInstanceOf(ResourceNotFoundException.class);
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
 }
