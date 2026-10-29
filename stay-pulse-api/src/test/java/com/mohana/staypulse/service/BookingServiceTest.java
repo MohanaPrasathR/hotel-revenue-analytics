@@ -216,4 +216,15 @@ class BookingServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class);
         verify(bookingRepository, never()).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should not call deleteById when the booking does not exist")
+    void deleteBooking_NotFound_ThrowsException() {
+        when(bookingRepository.existsById(77L)).thenReturn(false);
+
+        assertThatThrownBy(() -> bookingService.deleteBooking(77L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("77");
+        verify(bookingRepository, never()).deleteById(anyLong());
+    }
 }
