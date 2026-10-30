@@ -227,4 +227,14 @@ class BookingServiceTest {
                 .hasMessageContaining("77");
         verify(bookingRepository, never()).deleteById(anyLong());
     }
+
+    @Test
+    @DisplayName("Should reject a same-day stay where check-out equals check-in")
+    void createBooking_SameDayStay_ThrowsException() {
+        createRequest.setCheckOutDate(createRequest.getCheckInDate());
+
+        assertThatThrownBy(() -> bookingService.createBooking(createRequest))
+                .isInstanceOf(InvalidBookingDatesException.class);
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
 }
