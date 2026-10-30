@@ -237,4 +237,19 @@ class BookingServiceTest {
                 .isInstanceOf(InvalidBookingDatesException.class);
         verify(bookingRepository, never()).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should trim hotel and guest names before persisting")
+    void createBooking_TrimsNames() {
+        createRequest.setHotelName("  Grand Hyatt  ");
+        createRequest.setGuestName("  John Doe ");
+        when(bookingRepository.save(any(Booking.class))).thenReturn(sampleBooking);
+
+        bookingService.createBooking(createRequest);
+
+        org.mockito.ArgumentCaptor<Booking> captor = org.mockito.ArgumentCaptor.forClass(Booking.class);
+        verify(bookingRepository).save(captor.capture());
+        assertThat(captor.getValue().getHotelName()).isEqualTo("Grand Hyatt");
+        assertThat(captor.getValue().getGuestName()).isEqualTo("John Doe");
+    }
 }
