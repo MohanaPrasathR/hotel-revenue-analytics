@@ -252,4 +252,12 @@ class BookingServiceTest {
         assertThat(captor.getValue().getHotelName()).isEqualTo("Grand Hyatt");
         assertThat(captor.getValue().getGuestName()).isEqualTo("John Doe");
     }
+
+    @Test
+    @DisplayName("Should return an empty list for a blank hotel lookup without querying")
+    void getBookingsByHotel_Blank_ReturnsEmpty() {
+        assertThat(bookingService.getBookingsByHotel("   ")).isEmpty();
+        assertThat(bookingService.getBookingsByHotel(null)).isEmpty();
+        verifyNoInteractions(bookingRepository);
+    }
 }
