@@ -260,4 +260,15 @@ class BookingServiceTest {
         assertThat(bookingService.getBookingsByHotel(null)).isEmpty();
         verifyNoInteractions(bookingRepository);
     }
+
+    @Test
+    @DisplayName("Should pass a null hotel filter when the hotel text is blank")
+    void getBookingsWithFilters_BlankHotelBecomesNull() {
+        when(bookingRepository.findFilteredBookings(null, null, null, null, null)).thenReturn(List.of(sampleBooking));
+
+        List<BookingResponse> result = bookingService.getBookingsWithFilters("   ", null, null, null, null);
+
+        assertThat(result).hasSize(1);
+        verify(bookingRepository).findFilteredBookings(null, null, null, null, null);
+    }
 }
