@@ -266,4 +266,17 @@ class AnalyticsServiceTest {
         assertThat(response.get(1).getGrowthRatePercentage()).isEqualTo(50.0);
         assertThat(response.get(1).getPreviousMonthRevenue()).isEqualTo(new BigDecimal("1000.00"));
     }
+
+    @Test
+    @DisplayName("Should not report growth when the previous month had zero revenue")
+    void getRevenueByMonth_ZeroPreviousMonth_NoGrowth() {
+        List<Object[]> rows = List.of(
+                new Object[]{"2026-08", BigDecimal.ZERO, 0L},
+                new Object[]{"2026-09", new BigDecimal("900.00"), 2L});
+        when(bookingRepository.findMonthlyRevenueTrend()).thenReturn(rows);
+
+        List<MonthlyRevenueResponse> response = analyticsService.getRevenueByMonth();
+
+        assertThat(response.get(1).getGrowthRatePercentage()).isNull();
+    }
 }
