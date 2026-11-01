@@ -250,4 +250,20 @@ class AnalyticsServiceTest {
         assertThat(response.getTopHotelRevenue()).isEqualTo(new BigDecimal("7000.00"));
         assertThat(response.getMostPopularRoomType()).isEqualTo("DELUXE");
     }
+
+    @Test
+    @DisplayName("Should compute month-over-month growth and leave the first month without growth")
+    void getRevenueByMonth_ComputesGrowth() {
+        List<Object[]> rows = List.of(
+                new Object[]{"2026-08", new BigDecimal("1000.00"), 2L},
+                new Object[]{"2026-09", new BigDecimal("1500.00"), 3L});
+        when(bookingRepository.findMonthlyRevenueTrend()).thenReturn(rows);
+
+        List<MonthlyRevenueResponse> response = analyticsService.getRevenueByMonth();
+
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).getGrowthRatePercentage()).isNull();
+        assertThat(response.get(1).getGrowthRatePercentage()).isEqualTo(50.0);
+        assertThat(response.get(1).getPreviousMonthRevenue()).isEqualTo(new BigDecimal("1000.00"));
+    }
 }
