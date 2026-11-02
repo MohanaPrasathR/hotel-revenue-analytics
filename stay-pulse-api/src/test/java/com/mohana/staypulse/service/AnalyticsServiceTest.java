@@ -279,4 +279,18 @@ class AnalyticsServiceTest {
 
         assertThat(response.get(1).getGrowthRatePercentage()).isNull();
     }
+
+    @Test
+    @DisplayName("Should compute room type average revenue and share of total revenue")
+    void getRevenueByRoomType_ComputesShareAndAverage() {
+        when(bookingRepository.findRevenueGroupedByRoomType()).thenReturn(Collections.singletonList(
+                new Object[]{com.mohana.staypulse.entity.RoomType.DELUXE, new BigDecimal("250.00"), 2L}));
+        when(bookingRepository.findTotalRevenueOfActiveBookings()).thenReturn(new BigDecimal("1000.00"));
+
+        List<RoomTypeRevenueResponse> response = analyticsService.getRevenueByRoomType();
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getAverageRevenue()).isEqualByComparingTo("125.00");
+        assertThat(response.get(0).getRevenuePercentage()).isEqualTo(25.0);
+    }
 }
