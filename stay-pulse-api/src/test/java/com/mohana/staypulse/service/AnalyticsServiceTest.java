@@ -293,4 +293,26 @@ class AnalyticsServiceTest {
         assertThat(response.get(0).getAverageRevenue()).isEqualByComparingTo("125.00");
         assertThat(response.get(0).getRevenuePercentage()).isEqualTo(25.0);
     }
+
+    @Test
+    @DisplayName("Should calculate ADR, ALOS and cancellation rate from bookings")
+    void getOperationalMetrics_ComputesKpis() {
+        Booking active = Booking.builder().id(1L).hotelName("A").guestName("G1")
+                .checkInDate(java.time.LocalDate.of(2026, 9, 1)).checkOutDate(java.time.LocalDate.of(2026, 9, 5))
+                .guests(2).roomType(com.mohana.staypulse.entity.RoomType.DELUXE)
+                .bookingStatus(BookingStatus.CONFIRMED).totalRevenue(new BigDecimal("800.00")).build();
+        Booking cancelled = Booking.builder().id(2L).hotelName("A").guestName("G2")
+                .checkInDate(java.time.LocalDate.of(2026, 9, 2)).checkOutDate(java.time.LocalDate.of(2026, 9, 4))
+                .guests(1).roomType(com.mohana.staypulse.entity.RoomType.SINGLE)
+                .bookingStatus(BookingStatus.CANCELLED).totalRevenue(new BigDecimal("300.00")).build();
+        when(bookingRepository.findAll()).thenReturn(List.of(active, cancelled));
+
+        OperationalMetricsResponse response = analyticsService.getOperationalMetrics();
+
+        assertThat(response.getTotalRoomNights()).isEqualTo(4L);
+        assertThat(response.getAverageDailyRate()).isEqualByComparingTo("200.00");
+        assertThat(response.getAverageLengthOfStay()).isEqualTo(4.0);
+        assertThat(response.getCancellationRate()).isEqualTo(50.0);
+        assertThat(response.getTotalBookings()).isEqualTo(2L);
+    }
 }
