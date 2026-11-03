@@ -327,4 +327,16 @@ class AnalyticsServiceTest {
         assertThat(response.getAverageDailyRate()).isEqualByComparingTo("0");
         assertThat(response.getCancellationRate()).isZero();
     }
+
+    @Test
+    @DisplayName("Should fall back to zero when no active bookings exist for revenue and average")
+    void totals_NullAggregates_FallBackToZero() {
+        when(bookingRepository.findTotalRevenueOfActiveBookings()).thenReturn(null);
+        when(bookingRepository.countActiveBookings()).thenReturn(null);
+        when(bookingRepository.findAverageRevenuePerBooking()).thenReturn(null);
+
+        assertThat(analyticsService.getTotalRevenue().getTotalRevenue()).isEqualByComparingTo("0");
+        assertThat(analyticsService.getTotalRevenue().getEligibleBookingsCount()).isZero();
+        assertThat(analyticsService.getAverageRevenue().getAverageRevenuePerBooking()).isEqualByComparingTo("0");
+    }
 }
