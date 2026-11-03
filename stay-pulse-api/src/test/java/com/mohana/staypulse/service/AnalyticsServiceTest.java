@@ -315,4 +315,16 @@ class AnalyticsServiceTest {
         assertThat(response.getCancellationRate()).isEqualTo(50.0);
         assertThat(response.getTotalBookings()).isEqualTo(2L);
     }
+
+    @Test
+    @DisplayName("Should return zeroed operational metrics when there are no bookings")
+    void getOperationalMetrics_Empty_ReturnsZeros() {
+        when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
+
+        OperationalMetricsResponse response = analyticsService.getOperationalMetrics();
+
+        assertThat(response.getTotalBookings()).isZero();
+        assertThat(response.getAverageDailyRate()).isEqualByComparingTo("0");
+        assertThat(response.getCancellationRate()).isZero();
+    }
 }
