@@ -339,4 +339,16 @@ class AnalyticsServiceTest {
         assertThat(analyticsService.getTotalRevenue().getEligibleBookingsCount()).isZero();
         assertThat(analyticsService.getAverageRevenue().getAverageRevenuePerBooking()).isEqualByComparingTo("0");
     }
+
+    @Test
+    @DisplayName("Should return zero room type percentages when there is no revenue")
+    void getRevenueByRoomType_NoRevenue_ZeroPercentage() {
+        when(bookingRepository.findRevenueGroupedByRoomType()).thenReturn(Collections.singletonList(
+                new Object[]{com.mohana.staypulse.entity.RoomType.SINGLE, BigDecimal.ZERO, 1L}));
+        when(bookingRepository.findTotalRevenueOfActiveBookings()).thenReturn(null);
+
+        List<RoomTypeRevenueResponse> response = analyticsService.getRevenueByRoomType();
+
+        assertThat(response.get(0).getRevenuePercentage()).isZero();
+    }
 }
