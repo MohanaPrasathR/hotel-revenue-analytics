@@ -105,4 +105,18 @@ class RateLimiterFilterTest {
         assertThat(laterResponse.getStatus()).isEqualTo(200);
         assertThat(filter.trackedClientCount()).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("Should key clients by the first X-Forwarded-For address")
+    void shouldUseFirstForwardedForAddress() throws ServletException, IOException {
+        RateLimiterFilter strict = new RateLimiterFilter(1);
+        for (String forwarded : new String[]{"203.0.113.1, 10.0.0.1", "203.0.113.2, 10.0.0.1"}) {
+            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/bookings");
+            request.setRemoteAddr("10.0.0.1");
+            request.addHeader("X-Forwarded-For", forwarded);
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            strict.doFilter(request, response, filterChain);
+            assertThat(response.getStatus()).isEqualTo(200);
+        }
+    }
 }
