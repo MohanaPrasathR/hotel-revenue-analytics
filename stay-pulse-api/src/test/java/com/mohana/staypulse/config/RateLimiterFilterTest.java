@@ -119,4 +119,18 @@ class RateLimiterFilterTest {
             assertThat(response.getStatus()).isEqualTo(200);
         }
     }
+
+    @Test
+    @DisplayName("Should fall back to X-Real-IP when X-Forwarded-For is absent")
+    void shouldFallBackToRealIpHeader() throws ServletException, IOException {
+        RateLimiterFilter strict = new RateLimiterFilter(1);
+        for (String realIp : new String[]{"198.51.100.1", "198.51.100.2"}) {
+            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/bookings");
+            request.setRemoteAddr("10.0.0.1");
+            request.addHeader("X-Real-IP", realIp);
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            strict.doFilter(request, response, filterChain);
+            assertThat(response.getStatus()).isEqualTo(200);
+        }
+    }
 }
