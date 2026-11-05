@@ -133,4 +133,21 @@ class RateLimiterFilterTest {
             assertThat(response.getStatus()).isEqualTo(200);
         }
     }
+
+    @Test
+    @DisplayName("Should return JSON body and Retry-After header when blocked")
+    void shouldReturnJsonErrorWithRetryAfter() throws ServletException, IOException {
+        RateLimiterFilter strict = new RateLimiterFilter(1);
+        MockHttpServletResponse blocked = null;
+        for (int i = 0; i < 2; i++) {
+            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/bookings");
+            request.setRemoteAddr("192.0.2.9");
+            blocked = new MockHttpServletResponse();
+            strict.doFilter(request, blocked, filterChain);
+        }
+
+        assertThat(blocked.getStatus()).isEqualTo(429);
+        assertThat(blocked.getHeader("Retry-After")).isNotNull();
+        assertThat(blocked.getContentAsString()).contains("\"status\":429").contains("Too Many Requests");
+    }
 }
