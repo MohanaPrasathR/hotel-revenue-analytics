@@ -167,4 +167,20 @@ class BookingControllerTest {
 
         verify(bookingService).getPagedBookings(0, 10, "createdAt", "desc");
     }
+
+    @Test
+    @DisplayName("GET /api/bookings with query params should use the filtered lookup")
+    void getBookings_WithFilters_UsesFilteredLookup() throws Exception {
+        when(bookingService.getBookingsWithFilters(eq("Grand"), eq(RoomType.DELUXE), eq(BookingStatus.CONFIRMED), any(), any()))
+                .thenReturn(List.of(sampleResponse));
+
+        mockMvc.perform(get("/api/bookings")
+                        .param("hotel", "Grand")
+                        .param("roomType", "DELUXE")
+                        .param("status", "CONFIRMED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
+
+        verify(bookingService, never()).getAllBookings();
+    }
 }
