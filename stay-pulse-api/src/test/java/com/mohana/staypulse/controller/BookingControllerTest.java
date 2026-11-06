@@ -151,4 +151,20 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].hotelName").value("Grand Hyatt"))
                 .andExpect(jsonPath("$[0].roomType").value("DELUXE"));
     }
+
+    @Test
+    @DisplayName("GET /api/bookings/paged should delegate with default paging parameters")
+    void getPagedBookings_UsesDefaults() throws Exception {
+        org.springframework.data.domain.Page<BookingResponse> page = new org.springframework.data.domain.PageImpl<>(
+                List.of(sampleResponse), org.springframework.data.domain.PageRequest.of(0, 10), 1);
+        when(bookingService.getPagedBookings(0, 10, "createdAt", "desc"))
+                .thenReturn(com.mohana.staypulse.dto.response.PagedResponse.fromPage(page));
+
+        mockMvc.perform(get("/api/bookings/paged"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].hotelName").value("Grand Hyatt"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+
+        verify(bookingService).getPagedBookings(0, 10, "createdAt", "desc");
+    }
 }
