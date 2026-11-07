@@ -178,4 +178,15 @@ class AnalyticsControllerTest {
                 .andExpect(header().string("Content-Disposition", "attachment; filename=hotel_bookings_export.csv"))
                 .andExpect(content().contentType("text/csv; charset=UTF-8"));
     }
+
+    @Test
+    @DisplayName("GET /api/analytics/top-hotels should default the limit to 5")
+    void getTopHotels_DefaultLimit() throws Exception {
+        when(analyticsService.getTopHotels(5)).thenReturn(java.util.Collections.emptyList());
+
+        mockMvc.perform(get("/api/analytics/top-hotels"))
+                .andExpect(status().isOk());
+
+        org.mockito.Mockito.verify(analyticsService).getTopHotels(5);
+    }
 }
