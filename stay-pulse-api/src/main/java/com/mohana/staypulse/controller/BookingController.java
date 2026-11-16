@@ -5,13 +5,17 @@ import com.mohana.staypulse.dto.request.BookingUpdateRequest;
 import com.mohana.staypulse.dto.response.BookingResponse;
 import com.mohana.staypulse.service.BookingService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
@@ -42,8 +46,8 @@ public class BookingController {
 
     @GetMapping("/paged")
     public ResponseEntity<com.mohana.staypulse.dto.response.PagedResponse<BookingResponse>> getPagedBookings(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be zero or greater") int page,
+            @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be at least 1") @Max(value = 100, message = "size cannot exceed 100") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir) {
         com.mohana.staypulse.dto.response.PagedResponse<BookingResponse> response =
