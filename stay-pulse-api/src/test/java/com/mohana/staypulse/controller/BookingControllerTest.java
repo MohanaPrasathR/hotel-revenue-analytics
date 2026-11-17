@@ -183,4 +183,23 @@ class BookingControllerTest {
 
         verify(bookingService, never()).getAllBookings();
     }
+
+    @Test
+    @DisplayName("GET /api/bookings/paged should reject an oversized page size with 400")
+    void getPagedBookings_OversizedPage_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/bookings/paged").param("size", "5000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("CONSTRAINT_VIOLATION"))
+                .andExpect(jsonPath("$.validationErrors.size").exists());
+
+        verifyNoInteractions(bookingService);
+    }
+
+    @Test
+    @DisplayName("GET /api/bookings/paged should reject a negative page index with 400")
+    void getPagedBookings_NegativePage_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/bookings/paged").param("page", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors.page").exists());
+    }
 }
