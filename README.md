@@ -262,3 +262,13 @@ The application features a complete automated test suite:
 - **Portfolio:** [mohanaprasath.in](https://mohanaprasath.in)
 - **GitHub:** [@MohanaPrasathR](https://github.com/MohanaPrasathR)
 - **LinkedIn:** [Mohana Prasath R](https://www.linkedin.com/in/mohana-prasath-r-6268b132a/)
+
+## ⚙️ Configuration Reference
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `DB_URL` | `jdbc:h2:mem:stay_pulse_db` | JDBC connection string |
+| `DB_USERNAME` / `DB_PASSWORD` | `sa` / *(empty)* | Database credentials |
+| `DB_DRIVER` | `org.h2.Driver` | JDBC driver class |
+| `CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origin patterns |
+| `APP_SEED_ENABLED` | `true` | Seed sample reservations on an empty database |
