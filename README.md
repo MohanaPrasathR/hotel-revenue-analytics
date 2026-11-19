@@ -279,3 +279,10 @@ The application features a complete automated test suite:
 Allowed sort fields are `id`, `hotelName`, `guestName`, `checkInDate`, `checkOutDate`, `guests`, `roomType`,
 `bookingStatus`, `totalRevenue` and `createdAt`; unknown values fall back to `createdAt`.
 Out-of-range `page` / `size` values return `400 Bad Request` with `errorCode: CONSTRAINT_VIOLATION`.
+
+## 🚦 Rate Limiting
+
+Every API response carries `X-RateLimit-Limit`, `X-RateLimit-Remaining` and `X-RateLimit-Reset` headers.
+Clients exceeding **100 requests per minute** receive `429 Too Many Requests` with a `Retry-After` header.
+Clients are identified by the first `X-Forwarded-For` address, then `X-Real-IP`, then the socket address, so
+deploy the API behind a trusted proxy that overwrites these headers. Swagger, Actuator and the H2 console are exempt.
