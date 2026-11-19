@@ -272,3 +272,10 @@ The application features a complete automated test suite:
 | `DB_DRIVER` | `org.h2.Driver` | JDBC driver class |
 | `CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origin patterns |
 | `APP_SEED_ENABLED` | `true` | Seed sample reservations on an empty database |
+
+## 📄 Paging & Validation
+
+`GET /api/bookings/paged` accepts `page` (>= 0), `size` (1-100), `sortBy` and `sortDir` (`asc` / `desc`).
+Allowed sort fields are `id`, `hotelName`, `guestName`, `checkInDate`, `checkOutDate`, `guests`, `roomType`,
+`bookingStatus`, `totalRevenue` and `createdAt`; unknown values fall back to `createdAt`.
+Out-of-range `page` / `size` values return `400 Bad Request` with `errorCode: CONSTRAINT_VIOLATION`.
