@@ -286,3 +286,8 @@ Every API response carries `X-RateLimit-Limit`, `X-RateLimit-Remaining` and `X-R
 Clients exceeding **100 requests per minute** receive `429 Too Many Requests` with a `Retry-After` header.
 Clients are identified by the first `X-Forwarded-For` address, then `X-Real-IP`, then the socket address, so
 deploy the API behind a trusted proxy that overwrites these headers. Swagger, Actuator and the H2 console are exempt.
+
+## 📤 CSV Export Safety
+
+Exported CSV files quote free-text columns and prefix values that start with `=`, `+`, `-`, `@`, tab or carriage return
+with an apostrophe, so spreadsheet applications never evaluate guest or hotel names as formulas.
