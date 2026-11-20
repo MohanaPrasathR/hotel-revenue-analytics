@@ -291,3 +291,11 @@ deploy the API behind a trusted proxy that overwrites these headers. Swagger, Ac
 
 Exported CSV files quote free-text columns and prefix values that start with `=`, `+`, `-`, `@`, tab or carriage return
 with an apostrophe, so spreadsheet applications never evaluate guest or hotel names as formulas.
+
+## 🩺 Health Probes
+
+| Endpoint | Use |
+|---|---|
+| `/actuator/health` | Overall health including the Stay Pulse database indicator |
+| `/actuator/health/liveness` | Container liveness (used by the Docker `HEALTHCHECK`) |
+| `/actuator/health/readiness` | Readiness for traffic |
