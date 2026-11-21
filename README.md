@@ -309,3 +309,10 @@ cd stay-pulse-api && mvn verify
 # Frontend production build
 cd frontend && npm ci && npm run build
 ```
+
+## 🛠️ Troubleshooting
+
+- **Frontend cannot reach the API:** check `apiUrl` in `frontend/src/environments/environment.ts` and `CORS_ALLOWED_ORIGINS`.
+- **HTTP 429 during load tests:** the limiter allows 100 requests/minute per client IP; honour the `Retry-After` header.
+- **Port 8080 already in use:** run with `--server.port=8081` and update the frontend `apiUrl`.
+- **MySQL connection refused in Docker:** wait for the `mysql-db` health check, then restart `backend-api`.
