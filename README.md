@@ -299,3 +299,13 @@ with an apostrophe, so spreadsheet applications never evaluate guest or hotel na
 | `/actuator/health` | Overall health including the Stay Pulse database indicator |
 | `/actuator/health/liveness` | Container liveness (used by the Docker `HEALTHCHECK`) |
 | `/actuator/health/readiness` | Readiness for traffic |
+
+## 🧪 Running the Tests
+
+```bash
+# Backend (unit, web-layer, repository and integration tests)
+cd stay-pulse-api && mvn verify
+
+# Frontend production build
+cd frontend && npm ci && npm run build
+```
