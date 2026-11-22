@@ -316,3 +316,7 @@ cd frontend && npm ci && npm run build
 - **HTTP 429 during load tests:** the limiter allows 100 requests/minute per client IP; honour the `Retry-After` header.
 - **Port 8080 already in use:** run with `--server.port=8081` and update the frontend `apiUrl`.
 - **MySQL connection refused in Docker:** wait for the `mysql-db` health check, then restart `backend-api`.
+
+## 📜 License & Contributing
+
+Released under the [MIT License](LICENSE). Contributions are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
