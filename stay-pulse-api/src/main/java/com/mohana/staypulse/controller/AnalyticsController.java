@@ -74,7 +74,7 @@ public class AnalyticsController {
     public ResponseEntity<byte[]> exportBookingsCsv() {
         byte[] csvData = analyticsService.exportBookingsCsv();
         return ResponseEntity.ok()
-                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=hotel_bookings_export.csv")
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=stay_pulse_bookings_export.csv")
                 .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8")
                 .body(csvData);
     }

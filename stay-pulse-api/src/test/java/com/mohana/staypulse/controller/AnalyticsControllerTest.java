@@ -175,7 +175,7 @@ class AnalyticsControllerTest {
 
         mockMvc.perform(get("/api/analytics/export/csv"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Disposition", "attachment; filename=hotel_bookings_export.csv"))
+                .andExpect(header().string("Content-Disposition", "attachment; filename=stay_pulse_bookings_export.csv"))
                 .andExpect(content().contentType("text/csv; charset=UTF-8"));
     }
 
