@@ -189,4 +189,21 @@ class AnalyticsControllerTest {
 
         org.mockito.Mockito.verify(analyticsService).getTopHotels(5);
     }
+
+    @Test
+    @DisplayName("GET /api/analytics/summary-digest should return the digest payload")
+    void getSummaryDigest_ShouldReturn200() throws Exception {
+        com.mohana.staypulse.dto.response.RevenueSummaryDigestResponse digest =
+                com.mohana.staypulse.dto.response.RevenueSummaryDigestResponse.builder()
+                        .totalRevenue(new java.math.BigDecimal("12000.00"))
+                        .topPerformingHotel("Grand Horizon")
+                        .mostPopularRoomType("DELUXE")
+                        .build();
+        when(analyticsService.getRevenueSummaryDigest()).thenReturn(digest);
+
+        mockMvc.perform(get("/api/analytics/summary-digest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.topPerformingHotel").value("Grand Horizon"))
+                .andExpect(jsonPath("$.mostPopularRoomType").value("DELUXE"));
+    }
 }
