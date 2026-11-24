@@ -71,3 +71,14 @@ export const environment = {
 - **Interactive Chart.js Integration**: Dynamic time-series line charts, occupancy donuts, property bar graphs, and room category doughnut charts.
 - **Error Handling & State Resilience**: Graceful error banners with retry triggers, loading spinners, and empty state cards.
 - **Hospitality Operational Intelligence**: Real-time computation and display of ADR (Average Daily Rate), ALOS (Average Length of Stay), and Month-over-Month (MoM) revenue growth differentials.
+
+## Docker
+
+The production image is built with the multi-stage `Dockerfile` and served by nginx on port 80:
+
+```bash
+docker build -t stay-pulse-frontend .
+docker run -p 4200:80 stay-pulse-frontend
+```
+
+When using the root `docker-compose.yml` the dashboard is exposed on <http://localhost:4200> and starts after the API reports healthy.
