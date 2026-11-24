@@ -16,3 +16,8 @@
 - CSV export did not neutralise spreadsheet formulas in free-text fields.
 - Blank hotel lookups no longer throw.
 - Documentation links pointed at machine-specific `file:///` paths.
+
+### Added
+- `ConstraintViolationException` handling and validation of `page` / `size` on the paged bookings endpoint.
+- Graceful shutdown, response compression, liveness/readiness probes and a non-root Docker image with a `HEALTHCHECK`.
+- Additional unit, web-layer and rate-limiter tests, Javadoc for the service contracts, LICENSE and CONTRIBUTING guide.
