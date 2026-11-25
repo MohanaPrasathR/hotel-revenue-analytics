@@ -365,4 +365,19 @@ class AnalyticsServiceTest {
         assertThat(response).extracting(TopHotelResponse::getRank).containsExactly(1, 2);
         assertThat(response).extracting(TopHotelResponse::getHotelName).containsExactly("Alpha", "Beta");
     }
+
+    @Test
+    @DisplayName("Should map booking status counts including cancelled bookings")
+    void getBookingCountByStatus_MapsRows() {
+        List<Object[]> rows = List.of(
+                new Object[]{BookingStatus.CONFIRMED, 7L},
+                new Object[]{BookingStatus.CANCELLED, 2L});
+        when(bookingRepository.findBookingCountGroupedByStatus()).thenReturn(rows);
+
+        List<StatusCountResponse> response = analyticsService.getBookingCountByStatus();
+
+        assertThat(response).hasSize(2);
+        assertThat(response.get(1).getBookingStatus()).isEqualTo(BookingStatus.CANCELLED);
+        assertThat(response.get(1).getCount()).isEqualTo(2L);
+    }
 }
