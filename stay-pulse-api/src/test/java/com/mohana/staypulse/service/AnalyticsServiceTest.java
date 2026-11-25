@@ -351,4 +351,18 @@ class AnalyticsServiceTest {
 
         assertThat(response.get(0).getRevenuePercentage()).isZero();
     }
+
+    @Test
+    @DisplayName("Should assign sequential ranks to top hotels in repository order")
+    void getTopHotels_AssignsSequentialRanks() {
+        List<Object[]> rows = List.of(
+                new Object[]{"Alpha", new BigDecimal("900.00"), 3L},
+                new Object[]{"Beta", new BigDecimal("500.00"), 2L});
+        when(bookingRepository.findTopHotelsByRevenue(PageRequest.of(0, 2))).thenReturn(rows);
+
+        List<TopHotelResponse> response = analyticsService.getTopHotels(2);
+
+        assertThat(response).extracting(TopHotelResponse::getRank).containsExactly(1, 2);
+        assertThat(response).extracting(TopHotelResponse::getHotelName).containsExactly("Alpha", "Beta");
+    }
 }
