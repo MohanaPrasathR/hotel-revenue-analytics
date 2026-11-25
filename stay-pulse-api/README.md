@@ -1,6 +1,6 @@
 # 🏨 Stay Pulse — Spring Boot REST Microservice
 
-A high-performance Spring Boot 3 / Java 22 REST API providing reservation management and financial revenue analytics.
+A high-performance Spring Boot 3 REST API (Java 17+, built and tested on JDK 22 in CI) providing reservation management and financial revenue analytics.
 
 ---
 
@@ -57,3 +57,39 @@ spring.datasource.url=jdbc:mysql://localhost:3306/stay_pulse_db?createDatabaseIf
 spring.datasource.username=root
 spring.datasource.password=your_password
 ```
+
+---
+
+## ❗ Error Response Format
+
+All errors share one JSON shape. `validationErrors` is only present for validation failures and
+`traceId` mirrors the `X-Correlation-Id` of the request when one was supplied.
+
+```json
+{
+  "timestamp": "2026-11-12T10:15:30",
+  "status": 400,
+  "error": "Validation Failed",
+  "errorCode": "CONSTRAINT_VIOLATION",
+  "message": "One or more request parameters are invalid",
+  "path": "/api/bookings/paged",
+  "traceId": null,
+  "validationErrors": { "size": "size cannot exceed 100" }
+}
+```
+
+| `errorCode` | HTTP | Cause |
+| :--- | :--- | :--- |
+| `RESOURCE_NOT_FOUND` | 404 | Unknown booking ID |
+| `INVALID_BOOKING_DATES` | 400 | Check-out is not after check-in |
+| `VALIDATION_ERROR` | 400 | Invalid request body |
+| `CONSTRAINT_VIOLATION` | 400 | Invalid query parameter |
+
+---
+
+## 🔐 Operational Notes
+
+- Stack traces and exception class names are never included in error payloads.
+- The container runs as a non-root user and ships a `HEALTHCHECK` on `/actuator/health/liveness`.
+- The server drains in-flight requests for up to 20 seconds on shutdown.
+- JSON and static responses larger than 1 KB are compressed.
